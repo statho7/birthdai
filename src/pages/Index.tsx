@@ -335,26 +335,6 @@ Now write the full song.`;
           </div>
         </Card>
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-16 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
-          <Card className="p-6 text-center border-2 hover:border-primary transition-all hover:shadow-lg">
-            <Sparkles className="w-12 h-12 mx-auto mb-4 text-primary" />
-            <h3 className="font-semibold text-lg mb-2">AI-Powered</h3>
-            <p className="text-sm text-muted-foreground">Advanced AI creates unique, personalized content</p>
-          </Card>
-
-          <Card className="p-6 text-center border-2 hover:border-accent transition-all hover:shadow-lg">
-            <Gift className="w-12 h-12 mx-auto mb-4 text-accent" />
-            <h3 className="font-semibold text-lg mb-2">Truly Personal</h3>
-            <p className="text-sm text-muted-foreground">Every gift is one-of-a-kind, tailored to your friend</p>
-          </Card>
-
-          <Card className="p-6 text-center border-2 hover:border-secondary transition-all hover:shadow-lg">
-            <Music className="w-12 h-12 mx-auto mb-4 text-secondary" />
-            <h3 className="font-semibold text-lg mb-2">Easy & Fast</h3>
-            <p className="text-sm text-muted-foreground">Just describe, click, and share your amazing gift</p>
-          </Card>
-        </div>
       </div>
     </div>
   );
