@@ -77,10 +77,24 @@ export const SummaryCard = ({
 
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <p className="text-sm text-muted-foreground">Style</p>
-            <p className="font-medium">
-              {vibe} • {genre}
-            </p>
+            <p className="text-sm text-muted-foreground">Vibe</p>
+            <p className="font-medium">{vibe}</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onEdit(2)}
+            className="gap-2"
+          >
+            <Edit2 className="w-4 h-4" />
+            Edit
+          </Button>
+        </div>
+
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <p className="text-sm text-muted-foreground">Genre</p>
+            <p className="font-medium">{genre}</p>
           </div>
           <Button
             variant="ghost"
