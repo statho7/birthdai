@@ -619,7 +619,7 @@ Now write the full song.`;
               </CardContent>
               <div className="px-6 pb-6">
                 <p className="text-xs text-center text-muted-foreground">
-                  Powered by OpenAI · ElevenLabs · VEED · LiveKit
+                  Powered by OpenAI · ElevenLabs · VEED · LiveKit · Lovable
                 </p>
               </div>
             </Card>
