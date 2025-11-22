@@ -25,6 +25,7 @@ help:
 	@echo "Maintenance:"
 	@echo "  make clean          - Stop services and remove containers, networks, and volumes"
 	@echo "  make rebuild        - Clean build and restart everything"
+	@echo "  make fix-docker-cache - Clear Docker cache and rebuild (fixes GPG/build errors)"
 	@echo ""
 	@echo "Development:"
 	@echo "  make dev-frontend   - Run frontend in development mode (without Docker)"
@@ -134,6 +135,13 @@ clean:
 # Rebuild everything from scratch
 rebuild: clean build up
 	@echo "✅ Rebuild complete!"
+
+# Fix Docker build cache issues
+fix-docker-cache:
+	@echo "🔧 Clearing Docker build cache and rebuilding..."
+	@docker builder prune -af
+	@$(DOCKER_COMPOSE) build --no-cache
+	@echo "✅ Docker cache cleared and images rebuilt"
 
 # Development mode - frontend only (without Docker)
 dev-frontend:

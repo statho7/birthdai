@@ -25,7 +25,10 @@ RUN adduser \
 # gcc: C compiler needed for building Python packages with C extensions
 # python3-dev: Python development headers needed for compilation
 # We clean up the apt cache after installation to keep the image size down
-RUN apt-get update && apt-get install -y \
+RUN rm -rf /var/lib/apt/lists/* && \
+  apt-get clean && \
+  apt-get update && \
+  apt-get install -y \
   gcc \
   g++ \
   python3-dev \
