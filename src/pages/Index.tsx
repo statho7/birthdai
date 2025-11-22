@@ -15,6 +15,30 @@ const Index = () => {
   const [outputType, setOutputType] = useState("both");
   const [isGenerating, setIsGenerating] = useState(false);
 
+  const generatePrompt = () => {
+    return `You are a professional songwriter who writes catchy, personalized birthday songs.
+You always follow the structure requested by the user and adapt tone, style, rhythm, and rhyme patterns to the chosen genre.
+Keep lyrics clean, joyful, and easy to sing.
+Make the song feel genuinely personal by using all provided user details in a natural, creative way.
+
+Write a personalized birthday song.
+
+Friend's Name: ${friendName}
+Personality Traits: ${friendDescription}
+Theme: ${giftTheme}
+Preferred Style/Genre: Pop/Upbeat
+Vibe: Fun and celebratory
+
+Song Requirements:
+- 2 verses, 1 catchy chorus, and an optional bridge.
+- Make the chorus easy to sing along to.
+- Make the lyrics feel personal by weaving in the details above without overusing them.
+- Follow the rhythm and tone of the chosen genre.
+- Keep it warm, memorable, and fun.
+
+Now write the full song.`;
+  };
+
   const handleGenerate = async () => {
     if (!friendName || !friendDescription || !giftTheme) {
       toast.error("Please fill in all fields");
@@ -22,12 +46,14 @@ const Index = () => {
     }
 
     setIsGenerating(true);
-    
-    // Placeholder for AI generation - will need Lovable Cloud integration
+
+    const prompt = generatePrompt();
+    console.log("Generated Prompt for ChatGPT:");
+    console.log(prompt);
+
     setTimeout(() => {
       setIsGenerating(false);
-      toast.success("Generation complete! (Demo mode - connect Lovable Cloud for real generation)");
-    }, 2000);
+    }, 500);
   };
 
   return (
@@ -161,7 +187,7 @@ const Index = () => {
                 🎉 Your personalized gift will be generated using AI
               </p>
               <p className="mt-1 text-xs">
-                Connect Lovable Cloud to enable real video and song generation
+                Generate a prompt to use with ChatGPT or OpenAI
               </p>
             </div>
           </div>
