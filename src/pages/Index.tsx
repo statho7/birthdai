@@ -4,20 +4,58 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
 import { Sparkles, Music, Video, Gift, Loader2, Download } from "lucide-react";
 import { toast } from "sonner";
 
 const Index = () => {
   const [friendName, setFriendName] = useState("");
-  const [friendDescription, setFriendDescription] = useState("");
-  const [giftTheme, setGiftTheme] = useState("");
-  const [outputType, setOutputType] = useState("both");
+  const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
+  const [selectedTheme, setSelectedTheme] = useState("");
+  const [includeVideo, setIncludeVideo] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [musicUrl, setMusicUrl] = useState<string | null>(null);
   const [musicFilename, setMusicFilename] = useState<string | null>(null);
 
+  const personalityTraits = [
+    { emoji: "🎮", label: "Gamer", value: "gaming enthusiast" },
+    { emoji: "📚", label: "Bookworm", value: "book lover" },
+    { emoji: "🎵", label: "Music Lover", value: "music enthusiast" },
+    { emoji: "⚽", label: "Sports Fan", value: "sports enthusiast" },
+    { emoji: "🍕", label: "Foodie", value: "food lover" },
+    { emoji: "☕", label: "Coffee Addict", value: "coffee enthusiast" },
+    { emoji: "🎨", label: "Creative", value: "artistic and creative" },
+    { emoji: "🤓", label: "Nerdy", value: "nerdy and intellectual" },
+    { emoji: "😂", label: "Funny", value: "funny and humorous" },
+    { emoji: "🧘", label: "Zen", value: "calm and zen" },
+    { emoji: "🎉", label: "Party Person", value: "party enthusiast" },
+    { emoji: "💪", label: "Fitness Guru", value: "fitness enthusiast" },
+  ];
+
+  const themes = [
+    { emoji: "🎂", label: "Classic Birthday", value: "classic birthday celebration" },
+    { emoji: "🎊", label: "Party Time", value: "party celebration" },
+    { emoji: "🌟", label: "Milestone", value: "milestone birthday" },
+    { emoji: "🎸", label: "Rock Star", value: "rock star theme" },
+    { emoji: "🏖️", label: "Tropical", value: "tropical vacation vibe" },
+    { emoji: "🎮", label: "Gaming", value: "gaming theme" },
+    { emoji: "🍰", label: "Sweet & Cute", value: "sweet and cute celebration" },
+    { emoji: "🚀", label: "Adventure", value: "adventure and exploration" },
+    { emoji: "💐", label: "Elegant", value: "elegant and sophisticated" },
+    { emoji: "🦄", label: "Magical", value: "magical and fantasy" },
+  ];
+
+  const toggleTrait = (value: string) => {
+    setSelectedTraits((prev) =>
+      prev.includes(value) ? prev.filter((t) => t !== value) : [...prev, value]
+    );
+  };
+
   const generatePrompt = () => {
+    const traitsText = selectedTraits.join(", ");
+    const themeObj = themes.find((t) => t.value === selectedTheme);
+    const themeLabel = themeObj ? themeObj.label : "Birthday";
+
     return `You are a professional songwriter who writes catchy, personalized birthday songs.
 You always follow the structure requested by the user and adapt tone, style, rhythm, and rhyme patterns to the chosen genre.
 Keep lyrics clean, joyful, and easy to sing.
@@ -26,8 +64,8 @@ Make the song feel genuinely personal by using all provided user details in a na
 Write a personalized birthday song.
 
 Friend's Name: ${friendName}
-Personality Traits: ${friendDescription}
-Theme: ${giftTheme}
+Personality Traits: ${traitsText}
+Theme: ${themeLabel}
 Preferred Style/Genre: Pop/Upbeat
 Vibe: Fun and celebratory
 
@@ -42,8 +80,8 @@ Now write the full song.`;
   };
 
   const handleGenerate = async () => {
-    if (!friendName || !friendDescription || !giftTheme) {
-      toast.error("Please fill in all fields");
+    if (!friendName || selectedTraits.length === 0 || !selectedTheme) {
+      toast.error("Please complete all selections");
       return;
     }
 
@@ -131,88 +169,79 @@ Now write the full song.`;
               />
             </div>
 
-            {/* Friend Description */}
-            <div className="space-y-3">
-              <Label htmlFor="friendDescription" className="text-lg font-semibold">
-                Tell us about them
-              </Label>
-              <Textarea
-                id="friendDescription"
-                placeholder="Describe their personality, interests, hobbies, favorite things... The more details, the more personal the gift!"
-                value={friendDescription}
-                onChange={(e) => setFriendDescription(e.target.value)}
-                className="min-h-32 text-base border-2 focus:border-primary transition-all resize-none"
-              />
-              <p className="text-sm text-muted-foreground">
-                Example: "Loves hiking and indie music, always laughing, obsessed with coffee"
-              </p>
-            </div>
-
-            {/* Gift Theme */}
-            <div className="space-y-3">
-              <Label htmlFor="giftTheme" className="text-lg font-semibold">
-                What's the theme?
-              </Label>
-              <Input
-                id="giftTheme"
-                placeholder="Birthday celebration, friendship tribute, inside joke..."
-                value={giftTheme}
-                onChange={(e) => setGiftTheme(e.target.value)}
-                className="text-lg h-12 border-2 focus:border-primary transition-all"
-              />
-            </div>
-
-            {/* Output Type Selection */}
+            {/* Personality Traits Selection */}
             <div className="space-y-4">
-              <Label className="text-lg font-semibold">What should we create?</Label>
-              <RadioGroup
-                value={outputType}
-                onValueChange={setOutputType}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4"
-              >
-                <label htmlFor="video" className="cursor-pointer">
-                  <Card
-                    className={`p-6 text-center hover:border-primary transition-all duration-300 hover:shadow-lg ${
-                      outputType === "video" ? "border-primary border-2 bg-primary/5" : "border-2"
+              <div>
+                <Label className="text-lg font-semibold">Tell us about them</Label>
+                <p className="text-sm text-muted-foreground mt-1">Select all that apply</p>
+              </div>
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                {personalityTraits.map((trait) => (
+                  <button
+                    key={trait.value}
+                    type="button"
+                    onClick={() => toggleTrait(trait.value)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+                      selectedTraits.includes(trait.value)
+                        ? "border-primary bg-primary/10 shadow-md"
+                        : "border-border hover:border-primary/50"
                     }`}
                   >
-                    <RadioGroupItem value="video" id="video" className="sr-only" />
-                    <Video className="w-10 h-10 mx-auto mb-3 text-primary" />
-                    <h3 className="font-semibold text-lg mb-1">Video</h3>
-                    <p className="text-sm text-muted-foreground">A personalized video montage</p>
-                  </Card>
-                </label>
-
-                <label htmlFor="song" className="cursor-pointer">
-                  <Card
-                    className={`p-6 text-center hover:border-accent transition-all duration-300 hover:shadow-lg ${
-                      outputType === "song" ? "border-accent border-2 bg-accent/5" : "border-2"
-                    }`}
-                  >
-                    <RadioGroupItem value="song" id="song" className="sr-only" />
-                    <Music className="w-10 h-10 mx-auto mb-3 text-accent" />
-                    <h3 className="font-semibold text-lg mb-1">Song</h3>
-                    <p className="text-sm text-muted-foreground">A custom birthday song</p>
-                  </Card>
-                </label>
-
-                <label htmlFor="both" className="cursor-pointer">
-                  <Card
-                    className={`p-6 text-center hover:border-secondary transition-all duration-300 hover:shadow-lg ${
-                      outputType === "both" ? "border-secondary border-2 bg-secondary/5" : "border-2"
-                    }`}
-                  >
-                    <RadioGroupItem value="both" id="both" className="sr-only" />
-                    <div className="flex justify-center gap-2 mb-3">
-                      <Video className="w-8 h-8 text-primary" />
-                      <Music className="w-8 h-8 text-accent" />
-                    </div>
-                    <h3 className="font-semibold text-lg mb-1">Both</h3>
-                    <p className="text-sm text-muted-foreground">The ultimate gift combo</p>
-                  </Card>
-                </label>
-              </RadioGroup>
+                    <span className="text-3xl">{trait.emoji}</span>
+                    <span className="text-xs font-medium text-center">{trait.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Theme Selection */}
+            <div className="space-y-4">
+              <div>
+                <Label className="text-lg font-semibold">What's the theme?</Label>
+                <p className="text-sm text-muted-foreground mt-1">Pick one that fits best</p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {themes.map((theme) => (
+                  <button
+                    key={theme.value}
+                    type="button"
+                    onClick={() => setSelectedTheme(theme.value)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+                      selectedTheme === theme.value
+                        ? "border-accent bg-accent/10 shadow-md"
+                        : "border-border hover:border-accent/50"
+                    }`}
+                  >
+                    <span className="text-3xl">{theme.emoji}</span>
+                    <span className="text-xs font-medium text-center">{theme.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Video Add-on */}
+            <Card className="p-6 bg-secondary/5 border-2 border-secondary/20">
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Video className="w-5 h-5 text-secondary" />
+                    <h3 className="font-semibold text-lg">Add Video Gift</h3>
+                    <Badge variant="secondary" className="text-xs">Optional</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Generate a personalized video montage in addition to the song
+                  </p>
+                </div>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeVideo}
+                    onChange={(e) => setIncludeVideo(e.target.checked)}
+                    className="w-5 h-5 rounded border-2 border-secondary text-secondary focus:ring-2 focus:ring-secondary cursor-pointer"
+                  />
+                </label>
+              </div>
+            </Card>
 
             {/* Generate Button */}
             <Button
