@@ -341,7 +341,10 @@ Now write the full song.`;
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-3 leading-tight pb-2">
                 Birthday Songs with AI
               </h1>
-              <p className="text-xl text-muted-foreground mb-2">Generate custom birthday songs!</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                Create a custom birthday song in 30 seconds
+              </h2>
+              <p className="text-xl text-muted-foreground mb-2">Answer 5 quick questions, get a custom birthday song in under a minute.</p>
             </div>
 
             {/* Wizard Card */}
