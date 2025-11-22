@@ -600,10 +600,6 @@ Now write the full song.`;
                       </span>
                     </Button>
 
-                    <p className="text-xs text-center text-muted-foreground">
-                      Powered by OpenAI · ElevenLabs · VEED · LiveKit
-                    </p>
-
                     <StepNavigation
                       currentStep={currentStep}
                       totalSteps={3}
@@ -614,6 +610,11 @@ Now write the full song.`;
                   </div>
                 )}
               </CardContent>
+              <div className="px-6 pb-6">
+                <p className="text-xs text-center text-muted-foreground">
+                  Powered by OpenAI · ElevenLabs · VEED · LiveKit
+                </p>
+              </div>
             </Card>
 
             {/* Results Section */}
