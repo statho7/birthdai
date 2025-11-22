@@ -20,6 +20,12 @@ const Index = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [musicUrl, setMusicUrl] = useState<string | null>(null);
   const [musicFilename, setMusicFilename] = useState<string | null>(null);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoFilename, setVideoFilename] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const relationships = [
     { emoji: "👯", label: "Best Friend", value: "best friend" },
@@ -46,10 +52,38 @@ const Index = () => {
     { emoji: "⚡", label: "Hyphy · E-40", value: "Hyphy" },
   ];
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload a valid image file");
+        return;
+      }
+
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("Image size should be less than 10MB");
+        return;
+      }
+
+      setUploadedImage(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      toast.success("Image uploaded successfully! 📸");
+    }
+  };
+
   const generatePrompt = () => {
-    const vibeText = vibes.find(v => v.value === selectedVibe)?.label || "";
-    const genreText = genres.find(g => g.value === selectedGenre)?.value || "";
-    
+    const vibeText = vibes.find((v) => v.value === selectedVibe)?.label || "";
+    const genreText = genres.find((g) => g.value === selectedGenre)?.value || "";
+
     return `You are a professional songwriter who writes catchy, personalized birthday songs.
 You always follow the structure requested by the user and adapt tone, style, rhythm, and rhyme patterns to the chosen genre.
 Keep lyrics clean, joyful, and easy to sing.
@@ -80,9 +114,16 @@ Now write the full song.`;
       return;
     }
 
+    if (includeVideo && !uploadedImage) {
+      toast.error("Please upload an image for video generation");
+      return;
+    }
+
     setIsGenerating(true);
     setMusicUrl(null);
     setMusicFilename(null);
+    setVideoUrl(null);
+    setVideoFilename(null);
 
     const prompt = generatePrompt();
     console.log("Generated Prompt for Music Generation:");
@@ -114,6 +155,12 @@ Now write the full song.`;
         setMusicUrl(fullUrl);
         setMusicFilename(data.filename);
         toast.success("Music generated successfully! 🎵");
+
+        // Automatically generate video if the option is checked
+        if (includeVideo) {
+          // Trigger video generation automatically
+          await generateVideo(fullUrl, API_URL);
+        }
       } else {
         throw new Error("Music generation failed");
       }
@@ -123,6 +170,81 @@ Now write the full song.`;
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  const generateVideo = async (audioUrl: string, apiUrl: string) => {
+    setIsGeneratingVideo(true);
+    setVideoUrl(null);
+    setVideoFilename(null);
+
+    try {
+      let imageUrl: string;
+
+      // Upload image to fal.ai if we have one
+      if (uploadedImage) {
+        setIsUploadingImage(true);
+        const formData = new FormData();
+        formData.append("image", uploadedImage);
+
+        const uploadResponse = await fetch(`${apiUrl}/api/upload-image`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload image");
+        }
+
+        const uploadData = await uploadResponse.json();
+        imageUrl = uploadData.image_url;
+        setIsUploadingImage(false);
+      } else {
+        throw new Error("No image uploaded");
+      }
+
+      const response = await fetch(`${apiUrl}/api/generate-video`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          audio_url: audioUrl,
+          image_url: imageUrl,
+          resolution: "720p",
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Failed to generate video");
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.file_url) {
+        const fullUrl = `${apiUrl}${data.file_url}`;
+        setVideoUrl(fullUrl);
+        setVideoFilename(data.filename);
+        toast.success("Video generated successfully! 🎥");
+      } else {
+        throw new Error("Video generation failed");
+      }
+    } catch (error) {
+      console.error("Error generating video:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to generate video. Please try again.");
+    } finally {
+      setIsGeneratingVideo(false);
+    }
+  };
+
+  const handleGenerateVideo = async () => {
+    if (!musicUrl) {
+      toast.error("Please generate music first");
+      return;
+    }
+
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+    await generateVideo(musicUrl, API_URL);
   };
 
   return (
@@ -201,7 +323,9 @@ Now write the full song.`;
                 onChange={(e) => setFriendDescription(e.target.value)}
                 className="min-h-[120px] text-base border-2 focus:border-primary transition-all resize-none"
               />
-              <p className="text-sm text-muted-foreground">Be as detailed as you like - it makes the song more personal!</p>
+              <p className="text-sm text-muted-foreground">
+                Be as detailed as you like - it makes the song more personal!
+              </p>
             </div>
 
             {/* Vibe Selection */}
@@ -256,38 +380,96 @@ Now write the full song.`;
 
             {/* Video Add-on */}
             <Card className="p-6 bg-secondary/5 border-2 border-secondary/20">
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Video className="w-5 h-5 text-secondary" />
-                    <h3 className="font-semibold text-lg">Add Video Gift</h3>
-                    <Badge variant="secondary" className="text-xs">Optional</Badge>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Video className="w-5 h-5 text-secondary" />
+                      <h3 className="font-semibold text-lg">Add Video Gift</h3>
+                      <Badge variant="secondary" className="text-xs">
+                        Optional
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Generate a personalized video montage in addition to the song (video will be 5 seconds to optimize
+                      generation time)
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Generate a personalized video montage in addition to the song
-                  </p>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={includeVideo}
+                      onChange={(e) => {
+                        setIncludeVideo(e.target.checked);
+                        if (!e.target.checked) {
+                          setUploadedImage(null);
+                          setImagePreview(null);
+                        }
+                      }}
+                      className="w-5 h-5 rounded border-2 border-secondary text-secondary focus:ring-2 focus:ring-secondary cursor-pointer"
+                    />
+                  </label>
                 </div>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={includeVideo}
-                    onChange={(e) => setIncludeVideo(e.target.checked)}
-                    className="w-5 h-5 rounded border-2 border-secondary text-secondary focus:ring-2 focus:ring-secondary cursor-pointer"
-                  />
-                </label>
+
+                {/* Image Upload Section - shown when video is enabled */}
+                {includeVideo && (
+                  <div className="space-y-3 pt-4 border-t border-secondary/20">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="imageUpload" className="text-base font-semibold">
+                        Upload Image for Video
+                      </Label>
+                      <Badge variant="destructive" className="text-xs">
+                        Required
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Upload a photo that will be animated with your birthday song
+                    </p>
+
+                    <div className="space-y-3">
+                      <Input
+                        id="imageUpload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="cursor-pointer"
+                      />
+
+                      {imagePreview && (
+                        <div className="relative rounded-lg overflow-hidden border-2 border-secondary/30">
+                          <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover" />
+                          <button
+                            onClick={() => {
+                              setUploadedImage(null);
+                              setImagePreview(null);
+                            }}
+                            className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-2 hover:bg-destructive/90 transition-all"
+                          >
+                            <span className="text-sm">✕</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </Card>
 
             {/* Generate Button */}
             <Button
               onClick={handleGenerate}
-              disabled={isGenerating}
+              disabled={isGenerating || isGeneratingVideo}
               className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 transition-all shadow-lg hover:shadow-xl"
             >
               {isGenerating ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="w-5 h-5 animate-spin" />
                   Creating your gift...
+                </span>
+              ) : isGeneratingVideo ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Creating video...
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
@@ -317,6 +499,58 @@ Now write the full song.`;
                         href={musicUrl}
                         download={musicFilename}
                         className="flex items-center gap-2 text-primary hover:underline"
+                      >
+                        <Download className="w-4 h-4" />
+                        Download
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Show video generation status */}
+                  {includeVideo && isGeneratingVideo && !videoUrl && (
+                    <div className="flex items-center justify-center gap-2 p-4 bg-secondary/10 rounded-lg">
+                      <Loader2 className="w-5 h-5 animate-spin text-secondary" />
+                      <span className="text-sm font-medium">Creating video...</span>
+                    </div>
+                  )}
+
+                  {/* Manual Generate Video Button - only show if video generation wasn't automatic */}
+                  {includeVideo && !videoUrl && !isGeneratingVideo && musicUrl && (
+                    <Button
+                      onClick={handleGenerateVideo}
+                      disabled={isGeneratingVideo}
+                      className="w-full bg-gradient-to-r from-secondary to-accent hover:opacity-90 transition-all"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Video className="w-5 h-5" />
+                        Retry Video Generation
+                      </span>
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {/* Video Player */}
+            {videoUrl && (
+              <Card className="p-6 bg-gradient-to-br from-secondary/5 to-accent/5 border-2 border-secondary/20 animate-in fade-in slide-in-from-bottom-4">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Video className="w-6 h-6 text-secondary animate-pulse" />
+                    <h3 className="text-lg font-semibold">Your Birthday Video is Ready!</h3>
+                  </div>
+
+                  <video controls className="w-full rounded-lg" src={videoUrl}>
+                    Your browser does not support the video element.
+                  </video>
+
+                  {videoFilename && (
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>{videoFilename}</span>
+                      <a
+                        href={videoUrl}
+                        download={videoFilename}
+                        className="flex items-center gap-2 text-secondary hover:underline"
                       >
                         <Download className="w-4 h-4" />
                         Download
