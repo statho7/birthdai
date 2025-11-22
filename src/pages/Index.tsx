@@ -23,7 +23,7 @@ const Index = () => {
 
   const relationships = [
     { emoji: "👯", label: "Best Friend", value: "best friend" },
-    { emoji: "👨‍👩‍👧", label: "Family/Sibling", value: "family member or sibling" },
+    { emoji: "🏡", label: "Family/Sibling", value: "family member or sibling" },
     { emoji: "💑", label: "Partner/Spouse", value: "romantic partner or spouse" },
     { emoji: "👴", label: "Parent/Grandparent", value: "parent or grandparent" },
     { emoji: "💼", label: "Colleague", value: "colleague or coworker" },
@@ -327,7 +327,7 @@ Now write the full song.`;
             )}
 
             {/* Info Note */}
-            <div className="text-center text-sm text-muted-foreground pt-4 border-t">
+            <div className="text-center text-sm text-muted-foreground -mt-4">
               <p>🎉 Your personalized gift will be generated using AI</p>
             </div>
           </div>
