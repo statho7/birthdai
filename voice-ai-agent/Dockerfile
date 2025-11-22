@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-ARG PYTHON_VERSION=3.13
+ARG PYTHON_VERSION=3.12
 FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim AS base
 
 ENV PYTHONUNBUFFERED=1
@@ -35,7 +35,7 @@ RUN apt-get update --allow-insecure-repositories && \
 # Now install build dependencies normally
 # -------------------------------------------------------------
 RUN apt-get update && \
-  apt-get install -y gcc g++ python3-dev && \
+  apt-get install -y gcc g++ python3-dev ffmpeg && \
   rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

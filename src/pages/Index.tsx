@@ -44,12 +44,17 @@ const Index = () => {
   ];
 
   const genres = [
-    { emoji: "🎵", label: "Pop · Taylor Swift", value: "Pop" },
-    { emoji: "🎤", label: "Hip Hop · 50 Cent", value: "Hip Hop" },
-    { emoji: "🎸", label: "Rock · Queen", value: "Rock" },
-    { emoji: "🎧", label: "EDM · Calvin Harris", value: "EDM / Dance" },
-    { emoji: "🎹", label: "Acoustic · Ed Sheeran", value: "Acoustic / Singer-Songwriter" },
-    { emoji: "⚡", label: "Hyphy · E-40", value: "Hyphy" },
+    { emoji: "🎵", label: "Pop · Taylor Swift", value: "Pop", imagePath: "/genre_images/popImageUrl.png" },
+    { emoji: "🎤", label: "Hip Hop · 50 Cent", value: "Hip Hop", imagePath: "/genre_images/hiphopImageUrl.png" },
+    { emoji: "🎸", label: "Rock · Queen", value: "Rock", imagePath: "/genre_images/rockImageUrl.png" },
+    { emoji: "🎧", label: "EDM · Calvin Harris", value: "EDM / Dance", imagePath: "/genre_images/edmImageUrl.png" },
+    {
+      emoji: "🎹",
+      label: "Acoustic · Ed Sheeran",
+      value: "Acoustic / Singer-Songwriter",
+      imagePath: "/genre_images/acousticImageUrl.png",
+    },
+    { emoji: "⚡", label: "Hyphy · E-40", value: "Hyphy", imagePath: "/genre_images/hyphyImageUrl.png" },
   ];
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,11 +119,6 @@ Now write the full song.`;
       return;
     }
 
-    if (includeVideo && !uploadedImage) {
-      toast.error("Please upload an image for video generation");
-      return;
-    }
-
     setIsGenerating(true);
     setMusicUrl(null);
     setMusicFilename(null);
@@ -180,7 +180,7 @@ Now write the full song.`;
     try {
       let imageUrl: string;
 
-      // Upload image to fal.ai if we have one
+      // Use custom uploaded image or genre image
       if (uploadedImage) {
         setIsUploadingImage(true);
         const formData = new FormData();
@@ -199,7 +199,32 @@ Now write the full song.`;
         imageUrl = uploadData.image_url;
         setIsUploadingImage(false);
       } else {
-        throw new Error("No image uploaded");
+        // Use the genre image instead
+        const selectedGenreData = genres.find((g) => g.value === selectedGenre);
+        if (!selectedGenreData?.imagePath) {
+          throw new Error("No genre image found");
+        }
+
+        // Fetch the genre image and upload it
+        setIsUploadingImage(true);
+        const imageResponse = await fetch(selectedGenreData.imagePath);
+        const imageBlob = await imageResponse.blob();
+
+        const formData = new FormData();
+        formData.append("image", imageBlob, `genre_${selectedGenre}.png`);
+
+        const uploadResponse = await fetch(`${apiUrl}/api/upload-image`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload genre image");
+        }
+
+        const uploadData = await uploadResponse.json();
+        imageUrl = uploadData.image_url;
+        setIsUploadingImage(false);
       }
 
       const response = await fetch(`${apiUrl}/api/generate-video`, {
@@ -364,13 +389,15 @@ Now write the full song.`;
                     key={genre.value}
                     type="button"
                     onClick={() => setSelectedGenre(genre.value)}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 overflow-hidden ${
                       selectedGenre === genre.value
                         ? "border-secondary bg-secondary/10 shadow-md"
                         : "border-border hover:border-secondary/50"
                     }`}
                   >
-                    <span className="text-3xl">{genre.emoji}</span>
+                    <div className="w-full h-24 rounded-lg overflow-hidden bg-muted/30 flex items-center justify-center">
+                      <img src={genre.imagePath} alt={genre.label} className="w-full h-full object-contain" />
+                    </div>
                     <span className="text-xs font-medium text-center">{genre.label}</span>
                   </button>
                 ))}
@@ -415,14 +442,14 @@ Now write the full song.`;
                   <div className="space-y-3 pt-4 border-t border-secondary/20">
                     <div className="flex items-center justify-between">
                       <Label htmlFor="imageUpload" className="text-base font-semibold">
-                        Upload Image for Video
+                        Custom Image (Optional)
                       </Label>
-                      <Badge variant="destructive" className="text-xs">
-                        Required
+                      <Badge variant="secondary" className="text-xs">
+                        Optional
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Upload a photo that will be animated with your birthday song
+                      Upload your own photo or we'll use the genre image by default
                     </p>
 
                     <div className="space-y-3">
@@ -566,7 +593,6 @@ Now write the full song.`;
             </div>
           </div>
         </Card>
-
       </div>
     </div>
   );
