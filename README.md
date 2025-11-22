@@ -24,6 +24,10 @@ The key partner technologies we used are:
 - LiveKit
 - fal
 
+We used Lovable to build the website.
+
+Once we press the 
+
 ## Setup Instructions
 
 **0. Prerequisites**
