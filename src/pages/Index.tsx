@@ -152,7 +152,7 @@ Now write the full song.`;
             {/* Friend Name */}
             <div className="space-y-3">
               <Label htmlFor="friendName" className="text-lg font-semibold">
-                Who's the lucky friend?
+                Who's the lucky person?
               </Label>
               <Input
                 id="friendName"
