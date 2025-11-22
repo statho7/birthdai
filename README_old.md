@@ -4,9 +4,9 @@ Jump to [Setup Instructions](#setup-instructions) to get started.
 
 Watch our Loom video [here]().
 
-## Our Project - 🎉 BirthdAI by Birthday Banger Labs
+## Our Project - 🎉 BirthdAI
 
-We’re building a 60-second birthday gift machine: you talk or type a few details about someone and our app instantly writes, sings, and wraps a custom song + video montage for them, powered by OpenaI, ElevenLabs, LiveKit, VEED, fal, and Lovable.
+We’re building a 60-second birthday gift machine: you talk or type a few details about someone and our app instantly writes, sings, and wraps a custom song + video montage for them, powered by ElevenLabs, LiveKit, VEED, fal, and Lovable.
 
 It turns last-minute “oh no, I forgot a present” panic into the most personal gift in the room!
 
@@ -18,20 +18,15 @@ It turns last-minute “oh no, I forgot a present” panic into the most persona
 ## Tech Stack
 
 The key partner technologies we used are:
-- OpenAI
+- VEED
 - Lovable
 - ElevenLabs
-- VEED
 - LiveKit
 - fal
 
-In a nutshell:
-- We used Lovable to rapidly template and iterate on the website frontend.
-- Once users click "Generate gift", we extract all input fields and send them to our AI agent.
-- The AI agent uses ElevenLabs to generate a custom birthday music/song based on the user's prompt.
-- For the optional video feature, fal.ai powers the video generation using VEED's Fabric 1.0 model, combining the generated audio with images to create a personalized video montage.
-- LiveKit handles real-time voice conversations, allowing users to talk to the AI agent directly instead of typing, with speech-to-text and text-to-speech capabilities.
-- Throughout the stack, OpenAI's GPT-4.1-mini powers the conversational AI brain that understands user input and orchestrates the entire gift creation process.
+We used Lovable to build the website.
+
+Once we press the 
 
 ## Setup Instructions
 
