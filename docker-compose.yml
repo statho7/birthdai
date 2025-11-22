@@ -1,0 +1,32 @@
+services:
+  # React/Vite Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: birthdai-frontend
+    ports:
+      - "8080:80"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - birthdai-network
+
+  # Python Voice AI Agent
+  voice-ai-agent:
+    build:
+      context: ./voice-ai-agent
+      dockerfile: Dockerfile
+    container_name: birthdai-voice-agent
+    env_file:
+      - ./voice-ai-agent/.env.local
+    restart: unless-stopped
+    networks:
+      - birthdai-network
+    depends_on:
+      - frontend
+
+networks:
+  birthdai-network:
+    driver: bridge
