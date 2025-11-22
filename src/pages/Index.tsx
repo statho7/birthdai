@@ -148,7 +148,7 @@ Now write the full song.`;
         </div>
 
         {/* Main Form Card */}
-        <Card className="max-w-3xl mx-auto p-8 shadow-2xl border-2 backdrop-blur-sm bg-card/95 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+        <Card className="max-w-4xl mx-auto p-8 shadow-2xl border-2 backdrop-blur-sm bg-card/95 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
           <div className="space-y-8">
             {/* Friend Name */}
             <div className="space-y-3">
