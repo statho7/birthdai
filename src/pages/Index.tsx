@@ -137,13 +137,12 @@ Now write the full song.`;
           <div className="inline-flex items-center gap-2 mb-6">
             <Gift className="w-8 h-8 text-primary" />
             <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-              GiftGen
+              Birthday Songs with AI
             </h1>
             <Sparkles className="w-8 h-8 text-accent animate-pulse" />
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Transform your birthday wishes into unforgettable personalized videos and songs. Describe your friend,
-            choose a theme, and let AI create magic.
+            Generate custom birthday songs!
           </p>
         </div>
 
