@@ -34,7 +34,7 @@ const Index = () => {
     { emoji: "💝", label: "Heartfelt", value: "heartfelt and touching" },
     { emoji: "😂", label: "Funny Roast", value: "funny roast with playful teasing" },
     { emoji: "😬", label: "Cringe", value: "cringe and awkward in a fun way" },
-    { emoji: "🎈", label: "Kid-Friendly", value: "kid-friendly and wholesome" },
+    { emoji: "🎉", label: "Epic Party", value: "epic party celebration" },
   ];
 
   const genres = [
