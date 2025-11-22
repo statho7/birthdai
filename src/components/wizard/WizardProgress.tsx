@@ -1,5 +1,3 @@
-import { Check } from "lucide-react";
-
 interface WizardProgressProps {
   currentStep: number;
   totalSteps: number;
@@ -7,58 +5,24 @@ interface WizardProgressProps {
 }
 
 export const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardProgressProps) => {
+  const progressPercentage = (currentStep / totalSteps) * 100;
+  const currentStepLabel = stepLabels[currentStep - 1];
+
   return (
     <div className="w-full mb-8">
-      <div className="flex items-center justify-center mb-6">
-        {Array.from({ length: totalSteps }).map((_, index) => {
-          const stepNumber = index + 1;
-          const isActive = stepNumber === currentStep;
-          const isCompleted = stepNumber < currentStep;
-
-          return (
-            <div key={stepNumber} className="flex items-center">
-              <div className="flex flex-col items-center gap-2">
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    isCompleted
-                      ? "bg-primary text-primary-foreground"
-                      : isActive
-                        ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
-                        : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {isCompleted ? (
-                    <Check className="w-5 h-5 animate-scale-in" />
-                  ) : (
-                    <span className="font-semibold text-lg">{stepNumber}</span>
-                  )}
-                </div>
-                <span
-                  className={`text-xs text-center transition-colors duration-300 whitespace-nowrap ${
-                    isActive ? "text-foreground font-medium" : "text-muted-foreground"
-                  }`}
-                >
-                  {stepLabels[index]}
-                </span>
-              </div>
-              {index < totalSteps - 1 && (
-                <div className="w-20 h-0.5 mx-2 bg-muted relative" style={{ marginBottom: '28px' }}>
-                  <div
-                    className={`h-full transition-all duration-500 bg-primary`}
-                    style={{
-                      width: isCompleted ? "100%" : "0%",
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      <div className="text-center">
-        <p className="text-sm text-muted-foreground">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-sm text-muted-foreground">
           Step {currentStep} of {totalSteps}
-        </p>
+        </span>
+        <span className="text-sm font-medium text-foreground">
+          {currentStepLabel}
+        </span>
+      </div>
+      <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+        <div
+          className="h-full bg-primary transition-all duration-500 ease-out rounded-full"
+          style={{ width: `${progressPercentage}%` }}
+        />
       </div>
     </div>
   );
