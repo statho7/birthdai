@@ -23,8 +23,8 @@ export const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardPr
                     isCompleted
                       ? "bg-primary text-primary-foreground"
                       : isActive
-                      ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
-                      : "bg-muted text-muted-foreground"
+                        ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
+                        : "bg-muted text-muted-foreground"
                   }`}
                 >
                   {isCompleted ? (
@@ -57,7 +57,7 @@ export const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardPr
       </div>
       <div className="text-center">
         <p className="text-sm text-muted-foreground">
-          Step {currentStep} of {totalSteps} – {stepLabels[currentStep - 1]}
+          Step {currentStep} of {totalSteps}
         </p>
       </div>
     </div>
