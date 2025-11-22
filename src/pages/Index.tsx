@@ -330,7 +330,6 @@ Now write the full song.`;
             {/* Info Note */}
             <div className="text-center text-sm text-muted-foreground pt-4 border-t">
               <p>🎉 Your personalized gift will be generated using AI</p>
-              <p className="mt-1 text-xs">Generate a prompt to use with ChatGPT or OpenAI</p>
             </div>
           </div>
         </Card>
