@@ -17,6 +17,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from fastapi import UploadFile, File as FastAPIFile
+from livekit import api
 
 logger = logging.getLogger("api_server")
 logging.basicConfig(level=logging.INFO)
@@ -59,6 +60,13 @@ fal_api_key = os.getenv("FAL_KEY")
 if not fal_api_key:
     logger.warning("FAL_KEY not found. Video generation will not be available.")
 
+# Get LiveKit credentials
+livekit_url = os.getenv("LIVEKIT_URL")
+livekit_api_key = os.getenv("LIVEKIT_API_KEY")
+livekit_api_secret = os.getenv("LIVEKIT_API_SECRET")
+if not all([livekit_url, livekit_api_key, livekit_api_secret]):
+    logger.warning("LiveKit credentials not found. Voice agent features will not be available.")
+
 
 class MusicGenerationRequest(BaseModel):
     prompt: str
@@ -86,14 +94,68 @@ class VideoGenerationResponse(BaseModel):
     video_url: Optional[str] = None
 
 
+class LiveKitTokenRequest(BaseModel):
+    room_name: str
+    participant_name: str
+
+
+class LiveKitTokenResponse(BaseModel):
+    token: str
+    url: str
+
+
 @app.get("/")
 async def root():
     return {
         "service": "BirthdAI Music Generation API",
         "status": "running",
         "elevenlabs_configured": elevenlabs_client is not None,
-        "fal_configured": fal_api_key is not None
+        "fal_configured": fal_api_key is not None,
+        "livekit_configured": all([livekit_url, livekit_api_key, livekit_api_secret])
     }
+
+
+@app.post("/api/livekit-token", response_model=LiveKitTokenResponse)
+async def generate_livekit_token(request: LiveKitTokenRequest):
+    """
+    Generate a LiveKit access token for a participant to join a room.
+    
+    Args:
+        request: Contains room_name and participant_name
+        
+    Returns:
+        Response with access token and LiveKit server URL
+    """
+    if not all([livekit_url, livekit_api_key, livekit_api_secret]):
+        raise HTTPException(
+            status_code=503,
+            detail="LiveKit is not configured. Please set LIVEKIT_URL, LIVEKIT_API_KEY, and LIVEKIT_API_SECRET."
+        )
+    
+    try:
+        token = api.AccessToken(livekit_api_key, livekit_api_secret) \
+            .with_identity(request.participant_name) \
+            .with_name(request.participant_name) \
+            .with_grants(api.VideoGrants(
+                room_join=True,
+                room=request.room_name,
+            ))
+        
+        jwt_token = token.to_jwt()
+        
+        logger.info(f"Generated token for {request.participant_name} in room {request.room_name}")
+        
+        return LiveKitTokenResponse(
+            token=jwt_token,
+            url=livekit_url
+        )
+        
+    except Exception as e:
+        logger.error(f"Token generation failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Token generation failed: {str(e)}"
+        )
 
 
 @app.post("/api/generate-music", response_model=MusicGenerationResponse)

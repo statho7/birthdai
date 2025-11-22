@@ -283,7 +283,7 @@ Now write the full song.`;
         body: JSON.stringify({
           audio_url: audioUrl,
           image_url: imageUrl,
-          resolution: "720p",
+          resolution: "480p",
         }),
       });
 
@@ -344,7 +344,9 @@ Now write the full song.`;
               <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
                 Create a custom birthday song in 30 seconds
               </h2>
-              <p className="text-xl text-muted-foreground mb-2">Answer 5 quick questions, get a custom birthday song in under a minute.</p>
+              <p className="text-xl text-muted-foreground mb-2">
+                Answer 5 quick questions, get a custom birthday song in under a minute.
+              </p>
             </div>
 
             {/* Wizard Card */}
@@ -420,7 +422,9 @@ Now write the full song.`;
                         className="min-h-[120px] text-base border-2 focus:border-primary transition-all resize-none"
                       />
                       <p
-                        className={`text-xs ${friendDescription.trim().length >= 20 ? "text-muted-foreground" : "text-destructive"}`}
+                        className={`text-xs ${
+                          friendDescription.trim().length >= 20 ? "text-muted-foreground" : "text-destructive"
+                        }`}
                       >
                         {friendDescription.trim().length}/20 characters minimum
                       </p>
