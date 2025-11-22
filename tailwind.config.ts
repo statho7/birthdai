@@ -47,6 +47,15 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      backgroundImage: {
+        'gradient-warm': 'var(--gradient-warm)',
+        'gradient-glow': 'var(--gradient-glow)',
+        'gradient-subtle': 'var(--gradient-subtle)',
+      },
+      boxShadow: {
+        'warm': 'var(--shadow-warm)',
+        'glow': 'var(--shadow-glow)',
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -80,10 +89,35 @@ export default {
             height: "0",
           },
         },
+        "fade-in": {
+          from: {
+            opacity: "0",
+          },
+          to: {
+            opacity: "1",
+          },
+        },
+        "slide-in-from-bottom-4": {
+          from: {
+            transform: "translateY(1rem)",
+          },
+          to: {
+            transform: "translateY(0)",
+          },
+        },
+        "slide-in-from-bottom-8": {
+          from: {
+            transform: "translateY(2rem)",
+          },
+          to: {
+            transform: "translateY(0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "in": "fade-in 0.5s ease-out",
       },
     },
   },
