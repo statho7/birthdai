@@ -1,6 +1,10 @@
 import logging
+import os
+from datetime import datetime
+from pathlib import Path
 
 from dotenv import load_dotenv
+from elevenlabs.client import ElevenLabs
 from livekit import rtc
 from livekit.agents import (
     Agent,
@@ -8,7 +12,9 @@ from livekit.agents import (
     AgentSession,
     JobContext,
     JobProcess,
+    RunContext,
     cli,
+    function_tool,
     inference,
     room_io,
 )
@@ -26,8 +32,78 @@ class Assistant(Agent):
             instructions="""You are a helpful voice AI assistant. The user is interacting with you via voice, even if you perceive the conversation as text.
             You eagerly assist users with their questions by providing information from your extensive knowledge.
             Your responses are concise, to the point, and without any complex formatting or punctuation including emojis, asterisks, or other symbols.
-            You are curious, friendly, and have a sense of humor.""",
+            You are curious, friendly, and have a sense of humor.
+            
+            You can also generate music for the user. When they ask for music, use the generate_music tool with a detailed description of what they want.""",
         )
+        
+        # Initialize ElevenLabs client for music generation
+        api_key = os.getenv("ELEVENLABS_API_KEY")
+        if not api_key:
+            logger.warning("ELEVENLABS_API_KEY not found. Music generation will not be available.")
+            self.elevenlabs = None
+        else:
+            self.elevenlabs = ElevenLabs(api_key=api_key)
+        
+        # Create directory for saved music if it doesn't exist
+        self.music_dir = Path("generated_music")
+        self.music_dir.mkdir(exist_ok=True)
+
+    @function_tool
+    async def generate_music(self, context: RunContext, prompt: str, duration_seconds: int = 30):
+        """Generate music based on a text prompt and save it locally.
+        
+        Use this tool when the user asks you to create, generate, or make music for them.
+        The prompt should describe the style, mood, instruments, and any other characteristics they want.
+        
+        Args:
+            prompt: A detailed description of the music to generate (e.g., "upbeat electronic dance music with synthesizers", "calm piano melody for relaxation")
+            duration_seconds: Length of the music in seconds (default: 30, max: 120)
+        """
+        
+        if not self.elevenlabs:
+            return "Sorry, music generation is not available. The ELEVENLABS_API_KEY environment variable is not set."
+        
+        # Limit duration to reasonable range
+        duration_seconds = max(10, min(duration_seconds, 120))
+        duration_ms = duration_seconds * 1000
+        
+        logger.info(f"Generating music: {prompt} ({duration_seconds}s)")
+        
+        try:
+            # Generate music using ElevenLabs API
+            stream = self.elevenlabs.music.stream(
+                prompt=prompt,
+                music_length_ms=duration_ms,
+            )
+            
+            # Collect audio data
+            audio_chunks = []
+            for chunk in stream:
+                if chunk:
+                    audio_chunks.append(chunk)
+            
+            if not audio_chunks:
+                return "Sorry, I couldn't generate any music. Please try a different prompt."
+            
+            # Combine all chunks
+            audio_data = b"".join(audio_chunks)
+            
+            # Save to file with timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"music_{timestamp}.mp3"
+            filepath = self.music_dir / filename
+            
+            with open(filepath, "wb") as f:
+                f.write(audio_data)
+            
+            logger.info(f"Music saved to {filepath}")
+            
+            return f"I've created your music and saved it to {filepath}. The track is {duration_seconds} seconds long. Enjoy!"
+            
+        except Exception as e:
+            logger.error(f"Music generation failed: {e}")
+            return f"Sorry, I encountered an error while generating music: {str(e)}"
 
     # To add tools, use the @function_tool decorator.
     # Here's an example that adds a simple weather tool.

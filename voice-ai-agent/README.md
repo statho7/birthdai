@@ -21,7 +21,7 @@ This starter app is compatible with any [custom web/mobile frontend](https://doc
 
 ## Coding agents and MCP
 
-This project is designed to work with coding agents like [Cursor](https://www.cursor.com/) and [Claude Code](https://www.anthropic.com/claude-code). 
+This project is designed to work with coding agents like [Cursor](https://www.cursor.com/) and [Claude Code](https://www.anthropic.com/claude-code).
 
 To get the most out of these tools, install the [LiveKit Docs MCP server](https://docs.livekit.io/mcp).
 
@@ -36,16 +36,18 @@ claude mcp add --transport http livekit-docs https://docs.livekit.io/mcp
 ```
 
 For Codex CLI, use this command to install the server:
+
 ```
 codex mcp add --url https://docs.livekit.io/mcp livekit-docs
 ```
 
 For Gemini CLI, use this command to install the server:
+
 ```
 gemini mcp add --transport http livekit-docs https://docs.livekit.io/mcp
 ```
 
-The project includes a complete [AGENTS.md](AGENTS.md) file for these assistants. You can modify this file  your needs. To learn more about this file, see [https://agents.md](https://agents.md).
+The project includes a complete [AGENTS.md](AGENTS.md) file for these assistants. You can modify this file your needs. To learn more about this file, see [https://agents.md](https://agents.md).
 
 ## Dev Setup
 
@@ -68,6 +70,26 @@ You can load the LiveKit environment automatically using the [LiveKit CLI](https
 lk cloud auth
 lk app env -w -d .env.local
 ```
+
+### Music Generation Setup
+
+This project includes music generation capabilities using ElevenLabs. To enable this feature:
+
+1. Sign up for an [ElevenLabs account](https://elevenlabs.io/)
+2. Get your API key from the ElevenLabs dashboard
+3. Add it to your `.env.local` file:
+
+```
+ELEVENLABS_API_KEY=your_api_key_here
+```
+
+Once configured, you can ask the agent to generate music by voice, for example:
+
+- "Create some relaxing piano music for me"
+- "Generate upbeat electronic dance music"
+- "Make a 60 second jazz track"
+
+Generated music files are automatically saved to the `generated_music/` directory with timestamps.
 
 ## Run the agent
 
@@ -99,15 +121,15 @@ uv run python src/agent.py start
 
 Get started quickly with our pre-built frontend starter apps, or add telephony support:
 
-| Platform | Link | Description |
-|----------|----------|-------------|
-| **Web** | [`livekit-examples/agent-starter-react`](https://github.com/livekit-examples/agent-starter-react) | Web voice AI assistant with React & Next.js |
-| **iOS/macOS** | [`livekit-examples/agent-starter-swift`](https://github.com/livekit-examples/agent-starter-swift) | Native iOS, macOS, and visionOS voice AI assistant |
-| **Flutter** | [`livekit-examples/agent-starter-flutter`](https://github.com/livekit-examples/agent-starter-flutter) | Cross-platform voice AI assistant app |
-| **React Native** | [`livekit-examples/voice-assistant-react-native`](https://github.com/livekit-examples/voice-assistant-react-native) | Native mobile app with React Native & Expo |
-| **Android** | [`livekit-examples/agent-starter-android`](https://github.com/livekit-examples/agent-starter-android) | Native Android app with Kotlin & Jetpack Compose |
-| **Web Embed** | [`livekit-examples/agent-starter-embed`](https://github.com/livekit-examples/agent-starter-embed) | Voice AI widget for any website |
-| **Telephony** | [📚 Documentation](https://docs.livekit.io/agents/start/telephony/) | Add inbound or outbound calling to your agent |
+| Platform         | Link                                                                                                                | Description                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **Web**          | [`livekit-examples/agent-starter-react`](https://github.com/livekit-examples/agent-starter-react)                   | Web voice AI assistant with React & Next.js        |
+| **iOS/macOS**    | [`livekit-examples/agent-starter-swift`](https://github.com/livekit-examples/agent-starter-swift)                   | Native iOS, macOS, and visionOS voice AI assistant |
+| **Flutter**      | [`livekit-examples/agent-starter-flutter`](https://github.com/livekit-examples/agent-starter-flutter)               | Cross-platform voice AI assistant app              |
+| **React Native** | [`livekit-examples/voice-assistant-react-native`](https://github.com/livekit-examples/voice-assistant-react-native) | Native mobile app with React Native & Expo         |
+| **Android**      | [`livekit-examples/agent-starter-android`](https://github.com/livekit-examples/agent-starter-android)               | Native Android app with Kotlin & Jetpack Compose   |
+| **Web Embed**    | [`livekit-examples/agent-starter-embed`](https://github.com/livekit-examples/agent-starter-embed)                   | Voice AI widget for any website                    |
+| **Telephony**    | [📚 Documentation](https://docs.livekit.io/agents/start/telephony/)                                                 | Add inbound or outbound calling to your agent      |
 
 For advanced customization, see the [complete frontend guide](https://docs.livekit.io/agents/start/frontend/).
 

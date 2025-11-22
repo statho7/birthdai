@@ -46,9 +46,10 @@ RUN uv sync
 
 COPY . .
 RUN chown -R appuser:appuser /app
+RUN chmod +x start.sh
 
 USER appuser
 
 RUN uv run src/agent.py download-files
 
-CMD ["uv", "run", "src/agent.py", "start"]
+CMD ["./start.sh"]

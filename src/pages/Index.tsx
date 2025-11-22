@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Sparkles, Music, Video, Gift } from "lucide-react";
+import { Sparkles, Music, Video, Gift, Loader2, Download } from "lucide-react";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -14,6 +14,8 @@ const Index = () => {
   const [giftTheme, setGiftTheme] = useState("");
   const [outputType, setOutputType] = useState("both");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [musicUrl, setMusicUrl] = useState<string | null>(null);
+  const [musicFilename, setMusicFilename] = useState<string | null>(null);
 
   const generatePrompt = () => {
     return `You are a professional songwriter who writes catchy, personalized birthday songs.
@@ -46,14 +48,48 @@ Now write the full song.`;
     }
 
     setIsGenerating(true);
+    setMusicUrl(null);
+    setMusicFilename(null);
 
     const prompt = generatePrompt();
-    console.log("Generated Prompt for ChatGPT:");
+    console.log("Generated Prompt for Music Generation:");
     console.log(prompt);
 
-    setTimeout(() => {
+    try {
+      // Call the backend API to generate music
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const response = await fetch(`${API_URL}/api/generate-music`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          duration_seconds: 30,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || "Failed to generate music");
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.file_url) {
+        const fullUrl = `${API_URL}${data.file_url}`;
+        setMusicUrl(fullUrl);
+        setMusicFilename(data.filename);
+        toast.success("Music generated successfully! 🎵");
+      } else {
+        throw new Error("Music generation failed");
+      }
+    } catch (error) {
+      console.error("Error generating music:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to generate music. Please try again.");
+    } finally {
       setIsGenerating(false);
-    }, 500);
+    }
   };
 
   return (
@@ -61,7 +97,7 @@ Now write the full song.`;
       {/* Decorative elements */}
       <div className="fixed top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
       <div className="fixed bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse delay-1000" />
-      
+
       <div className="relative container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-1000">
@@ -73,8 +109,8 @@ Now write the full song.`;
             <Sparkles className="w-8 h-8 text-accent animate-pulse" />
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Transform your birthday wishes into unforgettable personalized videos and songs. 
-            Describe your friend, choose a theme, and let AI create magic.
+            Transform your birthday wishes into unforgettable personalized videos and songs. Describe your friend,
+            choose a theme, and let AI create magic.
           </p>
         </div>
 
@@ -129,9 +165,17 @@ Now write the full song.`;
             {/* Output Type Selection */}
             <div className="space-y-4">
               <Label className="text-lg font-semibold">What should we create?</Label>
-              <RadioGroup value={outputType} onValueChange={setOutputType} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <RadioGroup
+                value={outputType}
+                onValueChange={setOutputType}
+                className="grid grid-cols-1 md:grid-cols-3 gap-4"
+              >
                 <label htmlFor="video" className="cursor-pointer">
-                  <Card className={`p-6 text-center hover:border-primary transition-all duration-300 hover:shadow-lg ${outputType === 'video' ? 'border-primary border-2 bg-primary/5' : 'border-2'}`}>
+                  <Card
+                    className={`p-6 text-center hover:border-primary transition-all duration-300 hover:shadow-lg ${
+                      outputType === "video" ? "border-primary border-2 bg-primary/5" : "border-2"
+                    }`}
+                  >
                     <RadioGroupItem value="video" id="video" className="sr-only" />
                     <Video className="w-10 h-10 mx-auto mb-3 text-primary" />
                     <h3 className="font-semibold text-lg mb-1">Video</h3>
@@ -140,7 +184,11 @@ Now write the full song.`;
                 </label>
 
                 <label htmlFor="song" className="cursor-pointer">
-                  <Card className={`p-6 text-center hover:border-accent transition-all duration-300 hover:shadow-lg ${outputType === 'song' ? 'border-accent border-2 bg-accent/5' : 'border-2'}`}>
+                  <Card
+                    className={`p-6 text-center hover:border-accent transition-all duration-300 hover:shadow-lg ${
+                      outputType === "song" ? "border-accent border-2 bg-accent/5" : "border-2"
+                    }`}
+                  >
                     <RadioGroupItem value="song" id="song" className="sr-only" />
                     <Music className="w-10 h-10 mx-auto mb-3 text-accent" />
                     <h3 className="font-semibold text-lg mb-1">Song</h3>
@@ -149,7 +197,11 @@ Now write the full song.`;
                 </label>
 
                 <label htmlFor="both" className="cursor-pointer">
-                  <Card className={`p-6 text-center hover:border-secondary transition-all duration-300 hover:shadow-lg ${outputType === 'both' ? 'border-secondary border-2 bg-secondary/5' : 'border-2'}`}>
+                  <Card
+                    className={`p-6 text-center hover:border-secondary transition-all duration-300 hover:shadow-lg ${
+                      outputType === "both" ? "border-secondary border-2 bg-secondary/5" : "border-2"
+                    }`}
+                  >
                     <RadioGroupItem value="both" id="both" className="sr-only" />
                     <div className="flex justify-center gap-2 mb-3">
                       <Video className="w-8 h-8 text-primary" />
@@ -170,7 +222,7 @@ Now write the full song.`;
             >
               {isGenerating ? (
                 <span className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-5 h-5 animate-spin" />
                   Creating your gift...
                 </span>
               ) : (
@@ -181,14 +233,40 @@ Now write the full song.`;
               )}
             </Button>
 
+            {/* Music Player */}
+            {musicUrl && (
+              <Card className="p-6 bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-primary/20 animate-in fade-in slide-in-from-bottom-4">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Music className="w-6 h-6 text-primary animate-pulse" />
+                    <h3 className="text-lg font-semibold">Your Birthday Song is Ready!</h3>
+                  </div>
+
+                  <audio controls className="w-full" src={musicUrl}>
+                    Your browser does not support the audio element.
+                  </audio>
+
+                  {musicFilename && (
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>{musicFilename}</span>
+                      <a
+                        href={musicUrl}
+                        download={musicFilename}
+                        className="flex items-center gap-2 text-primary hover:underline"
+                      >
+                        <Download className="w-4 h-4" />
+                        Download
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+
             {/* Info Note */}
             <div className="text-center text-sm text-muted-foreground pt-4 border-t">
-              <p>
-                🎉 Your personalized gift will be generated using AI
-              </p>
-              <p className="mt-1 text-xs">
-                Generate a prompt to use with ChatGPT or OpenAI
-              </p>
+              <p>🎉 Your personalized gift will be generated using AI</p>
+              <p className="mt-1 text-xs">Generate a prompt to use with ChatGPT or OpenAI</p>
             </div>
           </div>
         </Card>
@@ -198,25 +276,19 @@ Now write the full song.`;
           <Card className="p-6 text-center border-2 hover:border-primary transition-all hover:shadow-lg">
             <Sparkles className="w-12 h-12 mx-auto mb-4 text-primary" />
             <h3 className="font-semibold text-lg mb-2">AI-Powered</h3>
-            <p className="text-sm text-muted-foreground">
-              Advanced AI creates unique, personalized content
-            </p>
+            <p className="text-sm text-muted-foreground">Advanced AI creates unique, personalized content</p>
           </Card>
 
           <Card className="p-6 text-center border-2 hover:border-accent transition-all hover:shadow-lg">
             <Gift className="w-12 h-12 mx-auto mb-4 text-accent" />
             <h3 className="font-semibold text-lg mb-2">Truly Personal</h3>
-            <p className="text-sm text-muted-foreground">
-              Every gift is one-of-a-kind, tailored to your friend
-            </p>
+            <p className="text-sm text-muted-foreground">Every gift is one-of-a-kind, tailored to your friend</p>
           </Card>
 
           <Card className="p-6 text-center border-2 hover:border-secondary transition-all hover:shadow-lg">
             <Music className="w-12 h-12 mx-auto mb-4 text-secondary" />
             <h3 className="font-semibold text-lg mb-2">Easy & Fast</h3>
-            <p className="text-sm text-muted-foreground">
-              Just describe, click, and share your amazing gift
-            </p>
+            <p className="text-sm text-muted-foreground">Just describe, click, and share your amazing gift</p>
           </Card>
         </div>
       </div>

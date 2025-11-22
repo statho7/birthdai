@@ -19,8 +19,12 @@ services:
       context: ./voice-ai-agent
       dockerfile: Dockerfile
     container_name: birthdai-voice-agent
+    ports:
+      - "8000:8000"  # API server port
     env_file:
       - ./voice-ai-agent/.env.local
+    volumes:
+      - music-files:/app/generated_music  # Shared volume for music files
     restart: unless-stopped
     networks:
       - birthdai-network
@@ -30,3 +34,6 @@ services:
 networks:
   birthdai-network:
     driver: bridge
+
+volumes:
+  music-files:
