@@ -11,7 +11,6 @@ import { WizardProgress } from "@/components/wizard/WizardProgress";
 import { StepNavigation } from "@/components/wizard/StepNavigation";
 import { PromptChip } from "@/components/wizard/PromptChip";
 import { SummaryCard } from "@/components/wizard/SummaryCard";
-import { MagicExample } from "@/components/wizard/MagicExample";
 import { VoiceInputModal } from "@/components/wizard/VoiceInputModal";
 import { GeneratingOverlay } from "@/components/wizard/GeneratingOverlay";
 
@@ -335,14 +334,8 @@ Now write the full song.`;
       <div className="fixed bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse delay-1000" />
 
       <div className="relative container mx-auto px-4 py-8 lg:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start max-w-7xl mx-auto">
-          {/* Magic Example - Left Column */}
-          <div className="hidden lg:block lg:sticky lg:top-8">
-            <MagicExample />
-          </div>
-
-          {/* Main Content - Center/Right Columns */}
-          <div className="lg:col-span-2 space-y-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="space-y-6">
             {/* Hero Section */}
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-3">
@@ -711,11 +704,11 @@ Now write the full song.`;
                  </CardContent>
                </Card>
              )}
-           </div>
-         </div>
-       </div>
-     </div>
-   );
+          </div>
+        </div>
+      </div>
+    </div>
+    );
  };
 
  export default Index;
