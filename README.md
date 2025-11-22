@@ -2,7 +2,7 @@
 
 Jump to [Setup Instructions](#setup-instructions) to get started.
 
-Watch our Loom video [here]().
+Watch our Loom video [here](https://www.loom.com/share/ca9e2263e73a425fb8595261d971eb4c).
 
 ## Our Project - 🎉 BirthdAI by Birthday Banger Labs
 
