@@ -338,7 +338,7 @@ Now write the full song.`;
           <div className="space-y-6">
             {/* Hero Section */}
             <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-3">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-3 leading-tight pb-2">
                 Birthday Songs with AI
               </h1>
               <p className="text-xl text-muted-foreground mb-2">Generate custom birthday songs!</p>
