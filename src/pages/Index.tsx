@@ -133,10 +133,10 @@ Now write the full song.`;
 
       <div className="relative container mx-auto px-4 py-16">
         {/* Hero Section */}
-        <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <div className="inline-flex items-center gap-2 mb-6">
+        <div className="text-center mb-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <div className="inline-flex items-center gap-2 mb-4">
             <Gift className="w-8 h-8 text-primary" />
-            <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent pb-3 leading-relaxed">
               Birthday Songs with AI
             </h1>
             <Sparkles className="w-8 h-8 text-accent animate-pulse" />
