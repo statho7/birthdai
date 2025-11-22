@@ -45,6 +45,7 @@ RUN mkdir -p src
 RUN uv sync
 
 COPY . .
+RUN mkdir -p /app/generated_music
 RUN chown -R appuser:appuser /app
 RUN chmod +x start.sh
 
