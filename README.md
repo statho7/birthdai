@@ -2,12 +2,15 @@
 
 Jump to [Setup Instructions](#setup-instructions) to get started.
 
+Watch our Loom video [here]().
+
 ## Our Project - 🎉 BirthdAI
 
-Short pitch (2–3 sentences)
-- problem & solution
+We’re building a 60-second birthday gift machine: you talk or type a few details about someone and our app instantly writes, sings, and wraps a custom song + video montage for them, powered by ElevenLabs, LiveKit, VEED, fal, and Lovable.
 
-## Our Team
+It turns last-minute “oh no, I forgot a present” panic into the most personal gift in the room!
+
+## Our Team
 - **[Dennis Knodt](https://www.linkedin.com/in/dennis-knodt/)** - Co-Founder @ Valuent
 - **[Andreas Stathopoulos](https://www.linkedin.com/in/andreasstathop/)** - Senior AI Engineer @ RedCloud
 - **[Maxim Huber](https://www.linkedin.com/in/maximhuber/)** - MSc Robotics Student @ ETH Zurich
