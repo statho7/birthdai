@@ -14,21 +14,21 @@ ENV PYTHONUNBUFFERED=1
 # See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
 ARG UID=10001
 RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/app" \
-    --shell "/sbin/nologin" \
-    --uid "${UID}" \
-    appuser
+  --disabled-password \
+  --gecos "" \
+  --home "/app" \
+  --shell "/sbin/nologin" \
+  --uid "${UID}" \
+  appuser
 
 # Install build dependencies required for Python packages with native extensions
 # gcc: C compiler needed for building Python packages with C extensions
 # python3-dev: Python development headers needed for compilation
 # We clean up the apt cache after installation to keep the image size down
 RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    python3-dev \
+  gcc \
+  g++ \
+  python3-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Create a new directory for our application code
