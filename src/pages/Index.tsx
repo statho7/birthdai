@@ -18,7 +18,7 @@ const Index = () => {
   // Wizard state
   const [currentStep, setCurrentStep] = useState(1);
   const [voiceModalOpen, setVoiceModalOpen] = useState(false);
-  
+
   // Form state
   const [friendName, setFriendName] = useState("");
   const [relationship, setRelationship] = useState("");
@@ -328,7 +328,7 @@ Now write the full song.`;
         onOpenChange={setVoiceModalOpen}
         onTranscription={handleVoiceTranscription}
       />
-      
+
       {/* Decorative elements */}
       <div className="fixed top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
       <div className="fixed bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse delay-1000" />
@@ -341,22 +341,13 @@ Now write the full song.`;
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-3">
                 Birthday Songs with AI
               </h1>
-              <p className="text-xl text-muted-foreground mb-2">
-                Generate custom birthday songs!
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Answer 3 quick questions, get a custom birthday song in under a minute.
-              </p>
+              <p className="text-xl text-muted-foreground mb-2">Generate custom birthday songs!</p>
             </div>
 
             {/* Wizard Card */}
             <Card className="shadow-2xl border-2 backdrop-blur-sm bg-card/95 wizard-fade-in">
               <CardHeader>
-                <WizardProgress
-                  currentStep={currentStep}
-                  totalSteps={3}
-                  stepLabels={stepLabels}
-                />
+                <WizardProgress currentStep={currentStep} totalSteps={3} stepLabels={stepLabels} />
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Step 1: About them */}
@@ -425,7 +416,9 @@ Now write the full song.`;
                         onChange={(e) => setFriendDescription(e.target.value)}
                         className="min-h-[120px] text-base border-2 focus:border-primary transition-all resize-none"
                       />
-                      <p className={`text-xs ${friendDescription.trim().length >= 20 ? 'text-muted-foreground' : 'text-destructive'}`}>
+                      <p
+                        className={`text-xs ${friendDescription.trim().length >= 20 ? "text-muted-foreground" : "text-destructive"}`}
+                      >
                         {friendDescription.trim().length}/20 characters minimum
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -596,8 +589,7 @@ Now write the full song.`;
                       <span className="relative z-10 flex items-center justify-center">
                         {isGenerating ? (
                           <>
-                            <Sparkles className="mr-2 h-5 w-5 animate-spin" />
-                            ✨ Generating your song...
+                            <Sparkles className="mr-2 h-5 w-5 animate-spin" />✨ Generating your song...
                           </>
                         ) : (
                           <>
@@ -613,102 +605,102 @@ Now write the full song.`;
                     </p>
 
                     <StepNavigation
-                       currentStep={currentStep}
-                       totalSteps={3}
-                       onNext={handleNext}
-                       onBack={handleBack}
-                       canProceed={true}
-                     />
-                   </div>
-                 )}
-               </CardContent>
-             </Card>
+                      currentStep={currentStep}
+                      totalSteps={3}
+                      onNext={handleNext}
+                      onBack={handleBack}
+                      canProceed={true}
+                    />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
-             {/* Results Section */}
-             {(musicUrl || videoUrl) && (
-               <Card className="shadow-2xl border-2 backdrop-blur-sm bg-card/95 animate-fade-in">
-                 <CardHeader>
-                   <h2 className="text-2xl font-bold flex items-center gap-2">
-                     <Sparkles className="w-6 h-6 text-primary" />
-                     Your Personalized Gift
-                   </h2>
-                   <p className="text-muted-foreground">Your custom birthday song is ready!</p>
-                 </CardHeader>
-                 <CardContent className="space-y-6">
-                   {musicUrl && (
-                     <div className="space-y-3">
-                       <Label className="text-lg font-semibold">🎵 Your Song</Label>
-                       <audio controls className="w-full" src={musicUrl}>
-                         Your browser does not support the audio element.
-                       </audio>
-                       <Button
-                         variant="outline"
-                         className="w-full gap-2"
-                         onClick={() => {
-                           const a = document.createElement('a');
-                           a.href = musicUrl;
-                           a.download = musicFilename || `birthday-song-${friendName}.mp3`;
-                           a.click();
-                         }}
-                       >
-                         <Download className="w-4 h-4" />
-                         Download Song
-                       </Button>
-                     </div>
-                   )}
+            {/* Results Section */}
+            {(musicUrl || videoUrl) && (
+              <Card className="shadow-2xl border-2 backdrop-blur-sm bg-card/95 animate-fade-in">
+                <CardHeader>
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <Sparkles className="w-6 h-6 text-primary" />
+                    Your Personalized Gift
+                  </h2>
+                  <p className="text-muted-foreground">Your custom birthday song is ready!</p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {musicUrl && (
+                    <div className="space-y-3">
+                      <Label className="text-lg font-semibold">🎵 Your Song</Label>
+                      <audio controls className="w-full" src={musicUrl}>
+                        Your browser does not support the audio element.
+                      </audio>
+                      <Button
+                        variant="outline"
+                        className="w-full gap-2"
+                        onClick={() => {
+                          const a = document.createElement("a");
+                          a.href = musicUrl;
+                          a.download = musicFilename || `birthday-song-${friendName}.mp3`;
+                          a.click();
+                        }}
+                      >
+                        <Download className="w-4 h-4" />
+                        Download Song
+                      </Button>
+                    </div>
+                  )}
 
-                   {videoUrl && (
-                     <div className="space-y-3">
-                       <Label className="text-lg font-semibold">🎬 Your Video</Label>
-                       <video controls className="w-full rounded-lg" src={videoUrl}>
-                         Your browser does not support the video element.
-                       </video>
-                       <Button
-                         variant="outline"
-                         className="w-full gap-2"
-                         onClick={() => {
-                           const a = document.createElement('a');
-                           a.href = videoUrl;
-                           a.download = videoFilename || `birthday-video-${friendName}.mp4`;
-                           a.click();
-                         }}
-                       >
-                         <Download className="w-4 h-4" />
-                         Download Video
-                       </Button>
-                     </div>
-                   )}
+                  {videoUrl && (
+                    <div className="space-y-3">
+                      <Label className="text-lg font-semibold">🎬 Your Video</Label>
+                      <video controls className="w-full rounded-lg" src={videoUrl}>
+                        Your browser does not support the video element.
+                      </video>
+                      <Button
+                        variant="outline"
+                        className="w-full gap-2"
+                        onClick={() => {
+                          const a = document.createElement("a");
+                          a.href = videoUrl;
+                          a.download = videoFilename || `birthday-video-${friendName}.mp4`;
+                          a.click();
+                        }}
+                      >
+                        <Download className="w-4 h-4" />
+                        Download Video
+                      </Button>
+                    </div>
+                  )}
 
-                   {!videoUrl && includeVideo && musicUrl && (
-                     <div className="space-y-3">
-                       <Button
-                         onClick={handleGenerateVideo}
-                         disabled={isGeneratingVideo}
-                         className="w-full gap-2"
-                         variant="secondary"
-                       >
-                         {isGeneratingVideo ? (
-                           <>
-                             <Loader2 className="w-4 h-4 animate-spin" />
-                             Generating Video...
-                           </>
-                         ) : (
-                           <>
-                             <Video className="w-4 h-4" />
-                             Generate Video Now
-                           </>
-                         )}
-                       </Button>
-                     </div>
-                   )}
-                 </CardContent>
-               </Card>
-             )}
+                  {!videoUrl && includeVideo && musicUrl && (
+                    <div className="space-y-3">
+                      <Button
+                        onClick={handleGenerateVideo}
+                        disabled={isGeneratingVideo}
+                        className="w-full gap-2"
+                        variant="secondary"
+                      >
+                        {isGeneratingVideo ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Generating Video...
+                          </>
+                        ) : (
+                          <>
+                            <Video className="w-4 h-4" />
+                            Generate Video Now
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
     </div>
-    );
- };
+  );
+};
 
- export default Index;
+export default Index;
