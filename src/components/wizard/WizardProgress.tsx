@@ -9,17 +9,17 @@ interface WizardProgressProps {
 export const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardProgressProps) => {
   return (
     <div className="w-full mb-8">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-start justify-center gap-4 mb-6">
         {Array.from({ length: totalSteps }).map((_, index) => {
           const stepNumber = index + 1;
           const isActive = stepNumber === currentStep;
           const isCompleted = stepNumber < currentStep;
 
           return (
-            <div key={stepNumber} className="flex items-center flex-1">
-              <div className="flex flex-col items-center flex-1">
+            <div key={stepNumber} className="flex items-center gap-3">
+              <div className="flex flex-col items-center">
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
                     isCompleted
                       ? "bg-primary text-primary-foreground"
                       : isActive
@@ -30,11 +30,11 @@ export const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardPr
                   {isCompleted ? (
                     <Check className="w-5 h-5 animate-scale-in" />
                   ) : (
-                    <span className="font-semibold">{stepNumber}</span>
+                    <span className="font-semibold text-lg">{stepNumber}</span>
                   )}
                 </div>
                 <span
-                  className={`text-xs mt-2 transition-colors duration-300 ${
+                  className={`text-xs mt-2 text-center transition-colors duration-300 whitespace-nowrap ${
                     isActive ? "text-foreground font-medium" : "text-muted-foreground"
                   }`}
                 >
@@ -42,11 +42,9 @@ export const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardPr
                 </span>
               </div>
               {index < totalSteps - 1 && (
-                <div className="flex-1 h-0.5 mx-2 mb-6">
+                <div className="w-16 h-0.5 mt-6 bg-muted">
                   <div
-                    className={`h-full transition-all duration-500 ${
-                      isCompleted ? "bg-primary" : "bg-muted"
-                    }`}
+                    className={`h-full transition-all duration-500 bg-primary`}
                     style={{
                       width: isCompleted ? "100%" : "0%",
                     }}
