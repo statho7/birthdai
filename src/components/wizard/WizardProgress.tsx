@@ -9,15 +9,15 @@ interface WizardProgressProps {
 export const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardProgressProps) => {
   return (
     <div className="w-full mb-8">
-      <div className="flex items-start justify-center gap-4 mb-6">
+      <div className="flex items-center justify-center mb-6">
         {Array.from({ length: totalSteps }).map((_, index) => {
           const stepNumber = index + 1;
           const isActive = stepNumber === currentStep;
           const isCompleted = stepNumber < currentStep;
 
           return (
-            <div key={stepNumber} className="flex items-center gap-3">
-              <div className="flex flex-col items-center">
+            <div key={stepNumber} className="flex items-center">
+              <div className="flex flex-col items-center gap-2">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
                     isCompleted
@@ -34,7 +34,7 @@ export const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardPr
                   )}
                 </div>
                 <span
-                  className={`text-xs mt-2 text-center transition-colors duration-300 whitespace-nowrap ${
+                  className={`text-xs text-center transition-colors duration-300 whitespace-nowrap ${
                     isActive ? "text-foreground font-medium" : "text-muted-foreground"
                   }`}
                 >
@@ -42,7 +42,7 @@ export const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardPr
                 </span>
               </div>
               {index < totalSteps - 1 && (
-                <div className="w-16 h-0.5 mt-6 bg-muted">
+                <div className="w-20 h-0.5 mx-2 bg-muted relative" style={{ marginBottom: '28px' }}>
                   <div
                     className={`h-full transition-all duration-500 bg-primary`}
                     style={{
