@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Music, Video, Gift, Loader2, Download } from "lucide-react";
+import { Sparkles, Music, Video, Gift, Loader2, Download, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -20,6 +20,8 @@ const Index = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [musicUrl, setMusicUrl] = useState<string | null>(null);
   const [musicFilename, setMusicFilename] = useState<string | null>(null);
+  const [lyrics, setLyrics] = useState<string | null>(null);
+  const [lyricsExpanded, setLyricsExpanded] = useState(true);
 
   const relationships = [
     { emoji: "👯", label: "Best Friend", value: "best friend" },
@@ -83,6 +85,7 @@ Now write the full song.`;
     setIsGenerating(true);
     setMusicUrl(null);
     setMusicFilename(null);
+    setLyrics(null);
 
     const prompt = generatePrompt();
     console.log("Generated Prompt for Music Generation:");
@@ -113,6 +116,7 @@ Now write the full song.`;
         const fullUrl = `${API_URL}${data.file_url}`;
         setMusicUrl(fullUrl);
         setMusicFilename(data.filename);
+        setLyrics(data.lyrics || null);
         toast.success("Music generated successfully! 🎵");
       } else {
         throw new Error("Music generation failed");
@@ -298,32 +302,64 @@ Now write the full song.`;
 
             {/* Music Player */}
             {musicUrl && (
-              <Card className="p-6 bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-primary/20 animate-in fade-in slide-in-from-bottom-4">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Music className="w-6 h-6 text-primary animate-pulse" />
-                    <h3 className="text-lg font-semibold">Your Birthday Song is Ready!</h3>
-                  </div>
-
-                  <audio controls className="w-full" src={musicUrl}>
-                    Your browser does not support the audio element.
-                  </audio>
-
-                  {musicFilename && (
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{musicFilename}</span>
-                      <a
-                        href={musicUrl}
-                        download={musicFilename}
-                        className="flex items-center gap-2 text-primary hover:underline"
-                      >
-                        <Download className="w-4 h-4" />
-                        Download
-                      </a>
+              <div className="space-y-4">
+                <Card className="p-6 bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-primary/20 animate-in fade-in slide-in-from-bottom-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <Music className="w-6 h-6 text-primary animate-pulse" />
+                      <h3 className="text-lg font-semibold">Your Birthday Song is Ready!</h3>
                     </div>
-                  )}
-                </div>
-              </Card>
+
+                    <audio controls className="w-full" src={musicUrl}>
+                      Your browser does not support the audio element.
+                    </audio>
+
+                    {musicFilename && (
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <span>{musicFilename}</span>
+                        <a
+                          href={musicUrl}
+                          download={musicFilename}
+                          className="flex items-center gap-2 text-primary hover:underline"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Lyrics Display */}
+                {lyrics && (
+                  <Card className="p-6 bg-gradient-to-br from-accent/5 to-secondary/5 border-2 border-accent/20 animate-in fade-in slide-in-from-bottom-4">
+                    <div className="space-y-4">
+                      <button
+                        onClick={() => setLyricsExpanded(!lyricsExpanded)}
+                        className="w-full flex items-center justify-between group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Sparkles className="w-5 h-5 text-accent" />
+                          <h3 className="text-lg font-semibold">Song Lyrics</h3>
+                        </div>
+                        {lyricsExpanded ? (
+                          <ChevronUp className="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" />
+                        )}
+                      </button>
+
+                      {lyricsExpanded && (
+                        <div className="pt-2 animate-in fade-in slide-in-from-top-2">
+                          <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground/90">
+                            {lyrics}
+                          </pre>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                )}
+              </div>
             )}
 
             {/* Info Note */}

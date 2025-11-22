@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from openai import OpenAI
 from pydantic import BaseModel
 
 logger = logging.getLogger("api_server")
@@ -30,12 +31,20 @@ app.add_middleware(
 )
 
 # Initialize ElevenLabs client
-api_key = os.getenv("ELEVENLABS_API_KEY")
-if not api_key:
+elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
+if not elevenlabs_api_key:
     logger.warning("ELEVENLABS_API_KEY not found. Music generation will not be available.")
     elevenlabs_client = None
 else:
-    elevenlabs_client = ElevenLabs(api_key=api_key)
+    elevenlabs_client = ElevenLabs(api_key=elevenlabs_api_key)
+
+# Initialize OpenAI client
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    logger.warning("OPENAI_API_KEY not found. Lyrics generation will not be available.")
+    openai_client = None
+else:
+    openai_client = OpenAI(api_key=openai_api_key)
 
 # Create directory for saved music if it doesn't exist
 music_dir = Path("generated_music")
@@ -55,6 +64,51 @@ class MusicGenerationResponse(BaseModel):
     message: str
     filename: Optional[str] = None
     file_url: Optional[str] = None
+    lyrics: Optional[str] = None
+
+
+def generate_lyrics_with_openai(prompt: str) -> str:
+    """
+    Generate song lyrics using OpenAI based on the given prompt.
+
+    Args:
+        prompt: The detailed prompt describing the song requirements
+
+    Returns:
+        Generated lyrics as a string
+    """
+    if not openai_client:
+        raise HTTPException(
+            status_code=503,
+            detail="Lyrics generation is not available. OPENAI_API_KEY is not configured."
+        )
+
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a professional songwriter. Generate only the song lyrics based on the user's requirements. Do not include any explanations, just the lyrics with verses, chorus, and bridge clearly labeled."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=0.9,
+        )
+
+        lyrics = response.choices[0].message.content
+        logger.info(f"Generated lyrics:\n{lyrics}")
+        return lyrics
+
+    except Exception as e:
+        logger.error(f"Lyrics generation failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Lyrics generation failed: {str(e)}"
+        )
 
 
 @app.get("/")
@@ -62,37 +116,43 @@ async def root():
     return {
         "service": "BirthdAI Music Generation API",
         "status": "running",
-        "elevenlabs_configured": elevenlabs_client is not None
+        "elevenlabs_configured": elevenlabs_client is not None,
+        "openai_configured": openai_client is not None
     }
 
 
 @app.post("/api/generate-music", response_model=MusicGenerationResponse)
 async def generate_music(request: MusicGenerationRequest):
     """
-    Generate music based on a text prompt using ElevenLabs API.
-    
+    Generate music based on a text prompt using OpenAI (for lyrics) and ElevenLabs API (for music).
+
     Args:
         request: Contains the prompt and optional duration
-        
+
     Returns:
-        Response with success status, message, filename, and file URL
+        Response with success status, message, filename, file URL, and lyrics
     """
     if not elevenlabs_client:
         raise HTTPException(
             status_code=503,
             detail="Music generation is not available. ELEVENLABS_API_KEY is not configured."
         )
-    
+
     # Limit duration to reasonable range
     duration_seconds = max(10, min(request.duration_seconds, 120))
     duration_ms = duration_seconds * 1000
-    
-    logger.info(f"Generating music: {request.prompt} ({duration_seconds}s)")
-    
+
+    logger.info(f"Generating lyrics from prompt: {request.prompt}")
+
     try:
-        # Generate music using ElevenLabs API
+        # Step 1: Generate lyrics using OpenAI
+        lyrics = generate_lyrics_with_openai(request.prompt)
+
+        logger.info(f"Generating music from lyrics ({duration_seconds}s)")
+
+        # Step 2: Generate music using ElevenLabs API with the generated lyrics
         stream = elevenlabs_client.music.stream(
-            prompt=request.prompt,
+            prompt=lyrics,
             music_length_ms=duration_ms,
         )
         
@@ -120,15 +180,16 @@ async def generate_music(request: MusicGenerationRequest):
             f.write(audio_data)
         
         logger.info(f"Music saved to {filepath}")
-        
+
         # Return the file URL (relative to the API server)
         file_url = f"/music/{filename}"
-        
+
         return MusicGenerationResponse(
             success=True,
             message=f"Music generated successfully! Duration: {duration_seconds} seconds.",
             filename=filename,
-            file_url=file_url
+            file_url=file_url,
+            lyrics=lyrics
         )
         
     except Exception as e:
