@@ -10,52 +10,47 @@ import { toast } from "sonner";
 
 const Index = () => {
   const [friendName, setFriendName] = useState("");
-  const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
-  const [selectedTheme, setSelectedTheme] = useState("");
+  const [relationship, setRelationship] = useState("");
+  const [friendDescription, setFriendDescription] = useState("");
+  const [selectedVibe, setSelectedVibe] = useState("");
+  const [customVibe, setCustomVibe] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [customGenre, setCustomGenre] = useState("");
   const [includeVideo, setIncludeVideo] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [musicUrl, setMusicUrl] = useState<string | null>(null);
   const [musicFilename, setMusicFilename] = useState<string | null>(null);
 
-  const personalityTraits = [
-    { emoji: "🎮", label: "Gamer", value: "gaming enthusiast" },
-    { emoji: "📚", label: "Bookworm", value: "book lover" },
-    { emoji: "🎵", label: "Music Lover", value: "music enthusiast" },
-    { emoji: "⚽", label: "Sports Fan", value: "sports enthusiast" },
-    { emoji: "🍕", label: "Foodie", value: "food lover" },
-    { emoji: "☕", label: "Coffee Addict", value: "coffee enthusiast" },
-    { emoji: "🎨", label: "Creative", value: "artistic and creative" },
-    { emoji: "🤓", label: "Nerdy", value: "nerdy and intellectual" },
-    { emoji: "😂", label: "Funny", value: "funny and humorous" },
-    { emoji: "🧘", label: "Zen", value: "calm and zen" },
-    { emoji: "🎉", label: "Party Person", value: "party enthusiast" },
-    { emoji: "💪", label: "Fitness Guru", value: "fitness enthusiast" },
+  const relationships = [
+    { emoji: "👯", label: "Best Friend", value: "best friend" },
+    { emoji: "👨‍👩‍👧", label: "Family/Sibling", value: "family member or sibling" },
+    { emoji: "💑", label: "Partner/Spouse", value: "romantic partner or spouse" },
+    { emoji: "👴", label: "Parent/Grandparent", value: "parent or grandparent" },
+    { emoji: "💼", label: "Colleague", value: "colleague or coworker" },
+    { emoji: "🎓", label: "Classmate", value: "classmate or school friend" },
   ];
 
-  const themes = [
-    { emoji: "🎂", label: "Classic Birthday", value: "classic birthday celebration" },
-    { emoji: "🎊", label: "Party Time", value: "party celebration" },
-    { emoji: "🌟", label: "Milestone", value: "milestone birthday" },
-    { emoji: "🎸", label: "Rock Star", value: "rock star theme" },
-    { emoji: "🏖️", label: "Tropical", value: "tropical vacation vibe" },
-    { emoji: "🎮", label: "Gaming", value: "gaming theme" },
-    { emoji: "🍰", label: "Sweet & Cute", value: "sweet and cute celebration" },
-    { emoji: "🚀", label: "Adventure", value: "adventure and exploration" },
-    { emoji: "💐", label: "Elegant", value: "elegant and sophisticated" },
-    { emoji: "🦄", label: "Magical", value: "magical and fantasy" },
+  const vibes = [
+    { emoji: "💝", label: "Heartfelt", value: "heartfelt and touching" },
+    { emoji: "😂", label: "Funny Roast", value: "funny roast with playful teasing" },
+    { emoji: "🚀", label: "Epic Hype", value: "epic and hype" },
+    { emoji: "🤫", label: "Inside Jokes", value: "full of inside jokes and memories" },
+    { emoji: "🎈", label: "Kid-Friendly", value: "kid-friendly and wholesome" },
+    { emoji: "✨", label: "Surprise Me", value: "surprise me with creativity" },
+    { emoji: "✍️", label: "Custom Vibe", value: "custom vibe" },
   ];
 
-  const toggleTrait = (value: string) => {
-    setSelectedTraits((prev) =>
-      prev.includes(value) ? prev.filter((t) => t !== value) : [...prev, value]
-    );
-  };
+  const genres = [
+    { emoji: "🎵", label: "Pop/Upbeat", value: "pop with upbeat tempo" },
+    { emoji: "🎸", label: "Rock/Energetic", value: "rock with energetic vibe" },
+    { emoji: "🎹", label: "Acoustic/Mellow", value: "acoustic and mellow" },
+    { emoji: "✍️", label: "Custom Genre", value: "custom genre" },
+  ];
 
   const generatePrompt = () => {
-    const traitsText = selectedTraits.join(", ");
-    const themeObj = themes.find((t) => t.value === selectedTheme);
-    const themeLabel = themeObj ? themeObj.label : "Birthday";
-
+    const vibeText = selectedVibe === "custom vibe" ? customVibe : vibes.find(v => v.value === selectedVibe)?.label || "";
+    const genreText = selectedGenre === "custom genre" ? customGenre : genres.find(g => g.value === selectedGenre)?.value || "";
+    
     return `You are a professional songwriter who writes catchy, personalized birthday songs.
 You always follow the structure requested by the user and adapt tone, style, rhythm, and rhyme patterns to the chosen genre.
 Keep lyrics clean, joyful, and easy to sing.
@@ -64,24 +59,37 @@ Make the song feel genuinely personal by using all provided user details in a na
 Write a personalized birthday song.
 
 Friend's Name: ${friendName}
-Personality Traits: ${traitsText}
-Theme: ${themeLabel}
-Preferred Style/Genre: Pop/Upbeat
-Vibe: Fun and celebratory
+Your Relationship: ${relationship}
+About Them: ${friendDescription}
+Song Vibe: ${vibeText}
+Genre: ${genreText}
 
 Song Requirements:
 - 2 verses, 1 catchy chorus, and an optional bridge.
 - Make the chorus easy to sing along to.
-- Make the lyrics feel personal by weaving in the details above without overusing them.
-- Follow the rhythm and tone of the chosen genre.
+- Use the relationship context and personal details to make the song authentic and meaningful.
+- Match the tone and energy to the specified vibe.
+- Follow the rhythm and style of the chosen genre.
 - Keep it warm, memorable, and fun.
 
 Now write the full song.`;
   };
 
   const handleGenerate = async () => {
-    if (!friendName || selectedTraits.length === 0 || !selectedTheme) {
-      toast.error("Please complete all selections");
+    if (!friendName || !relationship || !friendDescription || !selectedVibe || !selectedGenre) {
+      toast.error("Please complete all required fields");
+      return;
+    }
+
+    // Check custom vibe if selected
+    if (selectedVibe === "custom vibe" && !customVibe.trim()) {
+      toast.error("Please enter your custom vibe");
+      return;
+    }
+
+    // Check custom genre if selected
+    if (selectedGenre === "custom genre" && !customGenre.trim()) {
+      toast.error("Please enter your custom genre");
       return;
     }
 
@@ -169,54 +177,114 @@ Now write the full song.`;
               />
             </div>
 
-            {/* Personality Traits Selection */}
+            {/* Relationship Selection */}
             <div className="space-y-4">
               <div>
-                <Label className="text-lg font-semibold">Tell us about them</Label>
-                <p className="text-sm text-muted-foreground mt-1">Select all that apply</p>
+                <Label className="text-lg font-semibold">What's your relationship?</Label>
+                <p className="text-sm text-muted-foreground mt-1">Pick one that describes your connection</p>
               </div>
-              <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-                {personalityTraits.map((trait) => (
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                {relationships.map((rel) => (
                   <button
-                    key={trait.value}
+                    key={rel.value}
                     type="button"
-                    onClick={() => toggleTrait(trait.value)}
+                    onClick={() => setRelationship(rel.value)}
                     className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
-                      selectedTraits.includes(trait.value)
+                      relationship === rel.value
                         ? "border-primary bg-primary/10 shadow-md"
                         : "border-border hover:border-primary/50"
                     }`}
                   >
-                    <span className="text-3xl">{trait.emoji}</span>
-                    <span className="text-xs font-medium text-center">{trait.label}</span>
+                    <span className="text-3xl">{rel.emoji}</span>
+                    <span className="text-xs font-medium text-center">{rel.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Theme Selection */}
+            {/* Friend Description */}
+            <div className="space-y-3">
+              <Label htmlFor="friendDescription" className="text-lg font-semibold">
+                Tell us about them
+              </Label>
+              <Textarea
+                id="friendDescription"
+                placeholder="Describe your friend's personality, interests, hobbies, or any special memories you share..."
+                value={friendDescription}
+                onChange={(e) => setFriendDescription(e.target.value)}
+                className="min-h-[120px] text-base border-2 focus:border-primary transition-all resize-none"
+              />
+              <p className="text-sm text-muted-foreground">Be as detailed as you like - it makes the song more personal!</p>
+            </div>
+
+            {/* Vibe Selection */}
             <div className="space-y-4">
               <div>
-                <Label className="text-lg font-semibold">What's the theme?</Label>
-                <p className="text-sm text-muted-foreground mt-1">Pick one that fits best</p>
+                <Label className="text-lg font-semibold">What's the vibe?</Label>
+                <p className="text-sm text-muted-foreground mt-1">Choose the mood of the song</p>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                {themes.map((theme) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {vibes.map((vibe) => (
                   <button
-                    key={theme.value}
+                    key={vibe.value}
                     type="button"
-                    onClick={() => setSelectedTheme(theme.value)}
+                    onClick={() => setSelectedVibe(vibe.value)}
                     className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
-                      selectedTheme === theme.value
+                      selectedVibe === vibe.value
                         ? "border-accent bg-accent/10 shadow-md"
                         : "border-border hover:border-accent/50"
                     }`}
                   >
-                    <span className="text-3xl">{theme.emoji}</span>
-                    <span className="text-xs font-medium text-center">{theme.label}</span>
+                    <span className="text-3xl">{vibe.emoji}</span>
+                    <span className="text-xs font-medium text-center">{vibe.label}</span>
                   </button>
                 ))}
               </div>
+              {selectedVibe === "custom vibe" && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+                  <Input
+                    placeholder="Describe your custom vibe..."
+                    value={customVibe}
+                    onChange={(e) => setCustomVibe(e.target.value)}
+                    className="border-2 focus:border-accent transition-all"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Genre Selection */}
+            <div className="space-y-4">
+              <div>
+                <Label className="text-lg font-semibold">What's the genre?</Label>
+                <p className="text-sm text-muted-foreground mt-1">Choose the musical style</p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {genres.map((genre) => (
+                  <button
+                    key={genre.value}
+                    type="button"
+                    onClick={() => setSelectedGenre(genre.value)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+                      selectedGenre === genre.value
+                        ? "border-secondary bg-secondary/10 shadow-md"
+                        : "border-border hover:border-secondary/50"
+                    }`}
+                  >
+                    <span className="text-3xl">{genre.emoji}</span>
+                    <span className="text-xs font-medium text-center">{genre.label}</span>
+                  </button>
+                ))}
+              </div>
+              {selectedGenre === "custom genre" && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+                  <Input
+                    placeholder="Enter your custom genre..."
+                    value={customGenre}
+                    onChange={(e) => setCustomGenre(e.target.value)}
+                    className="border-2 focus:border-secondary transition-all"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Video Add-on */}
