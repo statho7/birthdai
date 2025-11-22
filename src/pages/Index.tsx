@@ -137,23 +137,22 @@ Now write the full song.`;
           <div className="inline-flex items-center gap-2 mb-6">
             <Gift className="w-8 h-8 text-primary" />
             <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-              GiftGen
+              Birthday Songs with AI
             </h1>
             <Sparkles className="w-8 h-8 text-accent animate-pulse" />
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Transform your birthday wishes into unforgettable personalized videos and songs. Describe your friend,
-            choose a theme, and let AI create magic.
+            Generate custom birthday songs!
           </p>
         </div>
 
         {/* Main Form Card */}
-        <Card className="max-w-3xl mx-auto p-8 shadow-2xl border-2 backdrop-blur-sm bg-card/95 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+        <Card className="max-w-4xl mx-auto p-8 shadow-2xl border-2 backdrop-blur-sm bg-card/95 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
           <div className="space-y-8">
             {/* Friend Name */}
             <div className="space-y-3">
               <Label htmlFor="friendName" className="text-lg font-semibold">
-                Who's the lucky friend?
+                Who's the lucky person?
               </Label>
               <Input
                 id="friendName"
@@ -330,31 +329,10 @@ Now write the full song.`;
             {/* Info Note */}
             <div className="text-center text-sm text-muted-foreground pt-4 border-t">
               <p>🎉 Your personalized gift will be generated using AI</p>
-              <p className="mt-1 text-xs">Generate a prompt to use with ChatGPT or OpenAI</p>
             </div>
           </div>
         </Card>
 
-        {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-16 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
-          <Card className="p-6 text-center border-2 hover:border-primary transition-all hover:shadow-lg">
-            <Sparkles className="w-12 h-12 mx-auto mb-4 text-primary" />
-            <h3 className="font-semibold text-lg mb-2">AI-Powered</h3>
-            <p className="text-sm text-muted-foreground">Advanced AI creates unique, personalized content</p>
-          </Card>
-
-          <Card className="p-6 text-center border-2 hover:border-accent transition-all hover:shadow-lg">
-            <Gift className="w-12 h-12 mx-auto mb-4 text-accent" />
-            <h3 className="font-semibold text-lg mb-2">Truly Personal</h3>
-            <p className="text-sm text-muted-foreground">Every gift is one-of-a-kind, tailored to your friend</p>
-          </Card>
-
-          <Card className="p-6 text-center border-2 hover:border-secondary transition-all hover:shadow-lg">
-            <Music className="w-12 h-12 mx-auto mb-4 text-secondary" />
-            <h3 className="font-semibold text-lg mb-2">Easy & Fast</h3>
-            <p className="text-sm text-muted-foreground">Just describe, click, and share your amazing gift</p>
-          </Card>
-        </div>
       </div>
     </div>
   );
