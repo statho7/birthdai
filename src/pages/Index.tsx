@@ -33,23 +33,22 @@ const Index = () => {
   const vibes = [
     { emoji: "💝", label: "Heartfelt", value: "heartfelt and touching" },
     { emoji: "😂", label: "Funny Roast", value: "funny roast with playful teasing" },
-    { emoji: "🚀", label: "Epic Hype", value: "epic and hype" },
-    { emoji: "🤫", label: "Inside Jokes", value: "full of inside jokes and memories" },
+    { emoji: "😬", label: "Cringe", value: "cringe and awkward in a fun way" },
     { emoji: "🎈", label: "Kid-Friendly", value: "kid-friendly and wholesome" },
-    { emoji: "✨", label: "Surprise Me", value: "surprise me with creativity" },
-    { emoji: "✍️", label: "Custom Vibe", value: "custom vibe" },
   ];
 
   const genres = [
-    { emoji: "🎵", label: "Pop/Upbeat", value: "pop with upbeat tempo" },
-    { emoji: "🎸", label: "Rock/Energetic", value: "rock with energetic vibe" },
-    { emoji: "🎹", label: "Acoustic/Mellow", value: "acoustic and mellow" },
-    { emoji: "✍️", label: "Custom Genre", value: "custom genre" },
+    { emoji: "🎵", label: "Pop · Taylor Swift", value: "Pop" },
+    { emoji: "🎤", label: "Hip Hop · 50 Cent", value: "Hip Hop" },
+    { emoji: "🎸", label: "Rock · Queen", value: "Rock" },
+    { emoji: "🎧", label: "EDM · Calvin Harris", value: "EDM / Dance" },
+    { emoji: "🎹", label: "Acoustic · Ed Sheeran", value: "Acoustic / Singer-Songwriter" },
+    { emoji: "⚡", label: "Hyphy · E-40", value: "Hyphy" },
   ];
 
   const generatePrompt = () => {
-    const vibeText = selectedVibe === "custom vibe" ? customVibe : vibes.find(v => v.value === selectedVibe)?.label || "";
-    const genreText = selectedGenre === "custom genre" ? customGenre : genres.find(g => g.value === selectedGenre)?.value || "";
+    const vibeText = vibes.find(v => v.value === selectedVibe)?.label || "";
+    const genreText = genres.find(g => g.value === selectedGenre)?.value || "";
     
     return `You are a professional songwriter who writes catchy, personalized birthday songs.
 You always follow the structure requested by the user and adapt tone, style, rhythm, and rhyme patterns to the chosen genre.
@@ -78,18 +77,6 @@ Now write the full song.`;
   const handleGenerate = async () => {
     if (!friendName || !relationship || !friendDescription || !selectedVibe || !selectedGenre) {
       toast.error("Please complete all required fields");
-      return;
-    }
-
-    // Check custom vibe if selected
-    if (selectedVibe === "custom vibe" && !customVibe.trim()) {
-      toast.error("Please enter your custom vibe");
-      return;
-    }
-
-    // Check custom genre if selected
-    if (selectedGenre === "custom genre" && !customGenre.trim()) {
-      toast.error("Please enter your custom genre");
       return;
     }
 
@@ -240,16 +227,6 @@ Now write the full song.`;
                   </button>
                 ))}
               </div>
-              {selectedVibe === "custom vibe" && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
-                  <Input
-                    placeholder="Describe your custom vibe..."
-                    value={customVibe}
-                    onChange={(e) => setCustomVibe(e.target.value)}
-                    className="border-2 focus:border-accent transition-all"
-                  />
-                </div>
-              )}
             </div>
 
             {/* Genre Selection */}
@@ -258,7 +235,7 @@ Now write the full song.`;
                 <Label className="text-lg font-semibold">What's the genre?</Label>
                 <p className="text-sm text-muted-foreground mt-1">Choose the musical style</p>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {genres.map((genre) => (
                   <button
                     key={genre.value}
@@ -275,16 +252,6 @@ Now write the full song.`;
                   </button>
                 ))}
               </div>
-              {selectedGenre === "custom genre" && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
-                  <Input
-                    placeholder="Enter your custom genre..."
-                    value={customGenre}
-                    onChange={(e) => setCustomGenre(e.target.value)}
-                    className="border-2 focus:border-secondary transition-all"
-                  />
-                </div>
-              )}
             </div>
 
             {/* Video Add-on */}
