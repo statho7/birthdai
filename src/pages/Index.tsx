@@ -4,20 +4,52 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
 import { Sparkles, Music, Video, Gift, Loader2, Download } from "lucide-react";
 import { toast } from "sonner";
 
 const Index = () => {
   const [friendName, setFriendName] = useState("");
+  const [relationship, setRelationship] = useState("");
   const [friendDescription, setFriendDescription] = useState("");
-  const [giftTheme, setGiftTheme] = useState("");
-  const [outputType, setOutputType] = useState("both");
+  const [selectedVibe, setSelectedVibe] = useState("");
+  const [customVibe, setCustomVibe] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [customGenre, setCustomGenre] = useState("");
+  const [includeVideo, setIncludeVideo] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [musicUrl, setMusicUrl] = useState<string | null>(null);
   const [musicFilename, setMusicFilename] = useState<string | null>(null);
 
+  const relationships = [
+    { emoji: "👯", label: "Best Friend", value: "best friend" },
+    { emoji: "👨‍👩‍👧", label: "Family/Sibling", value: "family member or sibling" },
+    { emoji: "💑", label: "Partner/Spouse", value: "romantic partner or spouse" },
+    { emoji: "👴", label: "Parent/Grandparent", value: "parent or grandparent" },
+    { emoji: "💼", label: "Colleague", value: "colleague or coworker" },
+    { emoji: "🎓", label: "Classmate", value: "classmate or school friend" },
+  ];
+
+  const vibes = [
+    { emoji: "💝", label: "Heartfelt", value: "heartfelt and touching" },
+    { emoji: "😂", label: "Funny Roast", value: "funny roast with playful teasing" },
+    { emoji: "😬", label: "Cringe", value: "cringe and awkward in a fun way" },
+    { emoji: "🎉", label: "Epic Party", value: "epic party celebration" },
+  ];
+
+  const genres = [
+    { emoji: "🎵", label: "Pop · Taylor Swift", value: "Pop" },
+    { emoji: "🎤", label: "Hip Hop · 50 Cent", value: "Hip Hop" },
+    { emoji: "🎸", label: "Rock · Queen", value: "Rock" },
+    { emoji: "🎧", label: "EDM · Calvin Harris", value: "EDM / Dance" },
+    { emoji: "🎹", label: "Acoustic · Ed Sheeran", value: "Acoustic / Singer-Songwriter" },
+    { emoji: "⚡", label: "Hyphy · E-40", value: "Hyphy" },
+  ];
+
   const generatePrompt = () => {
+    const vibeText = vibes.find(v => v.value === selectedVibe)?.label || "";
+    const genreText = genres.find(g => g.value === selectedGenre)?.value || "";
+    
     return `You are a professional songwriter who writes catchy, personalized birthday songs.
 You always follow the structure requested by the user and adapt tone, style, rhythm, and rhyme patterns to the chosen genre.
 Keep lyrics clean, joyful, and easy to sing.
@@ -26,24 +58,25 @@ Make the song feel genuinely personal by using all provided user details in a na
 Write a personalized birthday song.
 
 Friend's Name: ${friendName}
-Personality Traits: ${friendDescription}
-Theme: ${giftTheme}
-Preferred Style/Genre: Pop/Upbeat
-Vibe: Fun and celebratory
+Your Relationship: ${relationship}
+About Them: ${friendDescription}
+Song Vibe: ${vibeText}
+Genre: ${genreText}
 
 Song Requirements:
 - 2 verses, 1 catchy chorus, and an optional bridge.
 - Make the chorus easy to sing along to.
-- Make the lyrics feel personal by weaving in the details above without overusing them.
-- Follow the rhythm and tone of the chosen genre.
+- Use the relationship context and personal details to make the song authentic and meaningful.
+- Match the tone and energy to the specified vibe.
+- Follow the rhythm and style of the chosen genre.
 - Keep it warm, memorable, and fun.
 
 Now write the full song.`;
   };
 
   const handleGenerate = async () => {
-    if (!friendName || !friendDescription || !giftTheme) {
-      toast.error("Please fill in all fields");
+    if (!friendName || !relationship || !friendDescription || !selectedVibe || !selectedGenre) {
+      toast.error("Please complete all required fields");
       return;
     }
 
@@ -131,6 +164,31 @@ Now write the full song.`;
               />
             </div>
 
+            {/* Relationship Selection */}
+            <div className="space-y-4">
+              <div>
+                <Label className="text-lg font-semibold">What's your relationship?</Label>
+                <p className="text-sm text-muted-foreground mt-1">Pick one that describes your connection</p>
+              </div>
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                {relationships.map((rel) => (
+                  <button
+                    key={rel.value}
+                    type="button"
+                    onClick={() => setRelationship(rel.value)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+                      relationship === rel.value
+                        ? "border-primary bg-primary/10 shadow-md"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <span className="text-3xl">{rel.emoji}</span>
+                    <span className="text-xs font-medium text-center">{rel.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Friend Description */}
             <div className="space-y-3">
               <Label htmlFor="friendDescription" className="text-lg font-semibold">
@@ -138,81 +196,87 @@ Now write the full song.`;
               </Label>
               <Textarea
                 id="friendDescription"
-                placeholder="Describe their personality, interests, hobbies, favorite things... The more details, the more personal the gift!"
+                placeholder="Describe your friend's personality, interests, hobbies, or any special memories you share..."
                 value={friendDescription}
                 onChange={(e) => setFriendDescription(e.target.value)}
-                className="min-h-32 text-base border-2 focus:border-primary transition-all resize-none"
+                className="min-h-[120px] text-base border-2 focus:border-primary transition-all resize-none"
               />
-              <p className="text-sm text-muted-foreground">
-                Example: "Loves hiking and indie music, always laughing, obsessed with coffee"
-              </p>
+              <p className="text-sm text-muted-foreground">Be as detailed as you like - it makes the song more personal!</p>
             </div>
 
-            {/* Gift Theme */}
-            <div className="space-y-3">
-              <Label htmlFor="giftTheme" className="text-lg font-semibold">
-                What's the theme?
-              </Label>
-              <Input
-                id="giftTheme"
-                placeholder="Birthday celebration, friendship tribute, inside joke..."
-                value={giftTheme}
-                onChange={(e) => setGiftTheme(e.target.value)}
-                className="text-lg h-12 border-2 focus:border-primary transition-all"
-              />
-            </div>
-
-            {/* Output Type Selection */}
+            {/* Vibe Selection */}
             <div className="space-y-4">
-              <Label className="text-lg font-semibold">What should we create?</Label>
-              <RadioGroup
-                value={outputType}
-                onValueChange={setOutputType}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4"
-              >
-                <label htmlFor="video" className="cursor-pointer">
-                  <Card
-                    className={`p-6 text-center hover:border-primary transition-all duration-300 hover:shadow-lg ${
-                      outputType === "video" ? "border-primary border-2 bg-primary/5" : "border-2"
+              <div>
+                <Label className="text-lg font-semibold">What's the vibe?</Label>
+                <p className="text-sm text-muted-foreground mt-1">Choose the mood of the song</p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {vibes.map((vibe) => (
+                  <button
+                    key={vibe.value}
+                    type="button"
+                    onClick={() => setSelectedVibe(vibe.value)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+                      selectedVibe === vibe.value
+                        ? "border-accent bg-accent/10 shadow-md"
+                        : "border-border hover:border-accent/50"
                     }`}
                   >
-                    <RadioGroupItem value="video" id="video" className="sr-only" />
-                    <Video className="w-10 h-10 mx-auto mb-3 text-primary" />
-                    <h3 className="font-semibold text-lg mb-1">Video</h3>
-                    <p className="text-sm text-muted-foreground">A personalized video montage</p>
-                  </Card>
-                </label>
-
-                <label htmlFor="song" className="cursor-pointer">
-                  <Card
-                    className={`p-6 text-center hover:border-accent transition-all duration-300 hover:shadow-lg ${
-                      outputType === "song" ? "border-accent border-2 bg-accent/5" : "border-2"
-                    }`}
-                  >
-                    <RadioGroupItem value="song" id="song" className="sr-only" />
-                    <Music className="w-10 h-10 mx-auto mb-3 text-accent" />
-                    <h3 className="font-semibold text-lg mb-1">Song</h3>
-                    <p className="text-sm text-muted-foreground">A custom birthday song</p>
-                  </Card>
-                </label>
-
-                <label htmlFor="both" className="cursor-pointer">
-                  <Card
-                    className={`p-6 text-center hover:border-secondary transition-all duration-300 hover:shadow-lg ${
-                      outputType === "both" ? "border-secondary border-2 bg-secondary/5" : "border-2"
-                    }`}
-                  >
-                    <RadioGroupItem value="both" id="both" className="sr-only" />
-                    <div className="flex justify-center gap-2 mb-3">
-                      <Video className="w-8 h-8 text-primary" />
-                      <Music className="w-8 h-8 text-accent" />
-                    </div>
-                    <h3 className="font-semibold text-lg mb-1">Both</h3>
-                    <p className="text-sm text-muted-foreground">The ultimate gift combo</p>
-                  </Card>
-                </label>
-              </RadioGroup>
+                    <span className="text-3xl">{vibe.emoji}</span>
+                    <span className="text-xs font-medium text-center">{vibe.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Genre Selection */}
+            <div className="space-y-4">
+              <div>
+                <Label className="text-lg font-semibold">What's the genre?</Label>
+                <p className="text-sm text-muted-foreground mt-1">Choose the musical style</p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {genres.map((genre) => (
+                  <button
+                    key={genre.value}
+                    type="button"
+                    onClick={() => setSelectedGenre(genre.value)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+                      selectedGenre === genre.value
+                        ? "border-secondary bg-secondary/10 shadow-md"
+                        : "border-border hover:border-secondary/50"
+                    }`}
+                  >
+                    <span className="text-3xl">{genre.emoji}</span>
+                    <span className="text-xs font-medium text-center">{genre.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Video Add-on */}
+            <Card className="p-6 bg-secondary/5 border-2 border-secondary/20">
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Video className="w-5 h-5 text-secondary" />
+                    <h3 className="font-semibold text-lg">Add Video Gift</h3>
+                    <Badge variant="secondary" className="text-xs">Optional</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Generate a personalized video montage in addition to the song
+                  </p>
+                </div>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeVideo}
+                    onChange={(e) => setIncludeVideo(e.target.checked)}
+                    className="w-5 h-5 rounded border-2 border-secondary text-secondary focus:ring-2 focus:ring-secondary cursor-pointer"
+                  />
+                </label>
+              </div>
+            </Card>
 
             {/* Generate Button */}
             <Button
