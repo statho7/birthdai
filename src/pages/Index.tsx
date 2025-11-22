@@ -432,6 +432,9 @@ Now write the full song.`;
                         onChange={(e) => setFriendDescription(e.target.value)}
                         className="min-h-[120px] text-base border-2 focus:border-primary transition-all resize-none"
                       />
+                      <p className={`text-xs ${friendDescription.trim().length >= 20 ? 'text-muted-foreground' : 'text-destructive'}`}>
+                        {friendDescription.trim().length}/20 characters minimum
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         <PromptChip
                           icon={Zap}
